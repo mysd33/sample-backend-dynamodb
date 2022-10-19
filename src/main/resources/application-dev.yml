@@ -1,0 +1,19 @@
+server:
+  port: 8000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" 
+                   
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.jdbc: INFO
+#    org.thymeleaf: DEBUG
+    com.example: DEBUG
+    
+aws:
+  dynamodb:
+    port: 18000    

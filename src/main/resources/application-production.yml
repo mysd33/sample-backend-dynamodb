@@ -1,0 +1,12 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" 
+                   
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.jdbc: INFO
+#    org.thymeleaf: DEBUG
+    com.example: DEBUG
