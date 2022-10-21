@@ -1,62 +1,53 @@
 package com.example.backend;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
-import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
+import com.example.backend.domain.message.MessageIds;
 import com.example.backend.infra.repository.TodoTableItem;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
- * DynamoDB Localを起動するクラス 
+ * DynamoDB 本番向けにAP起動時初回テーブル作成するクラス 
  */
+@Slf4j
 @RequiredArgsConstructor
-public class DynamoDBLocalExecutor {
+public class DynamoDBProdIntializer {
+	private final DynamoDbClient client;
 	private final DynamoDbEnhancedClient enhancedClient;
-	private final String port;	
-	
-	private DynamoDBProxyServer server = null;		
-	
+	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+				
 	@Value("${aws.dynamodb.todo-tablename:Todo}")
 	private String todoTableName; 
 	
 	/**
-	 * DynamoDB Local 起動
+	 * DynamoDB Table作成
 	 * @throws Exception
 	 */
 	@PostConstruct
 	public void startup() throws Exception {
-		//特定のフォルダに出力したsqlite4java-win32-x64.dllのパスを通す
-	    System.setProperty("sqlite4java.library.path", "native-libs");
-	    //DynamoDB Local起動
-		final String[] localArgs = { "-inMemory" , "-port", port};
-		server = ServerRunner.createServerFromCommandLineArgs(localArgs);
-	    server.start();
-
-		//AP起動時動作確認用にTodoテーブル作成
+		//Todoテーブルがないことを確認
+		if (client.listTables().tableNames().contains(todoTableName)) {
+			appLogger.info(MessageIds.I_EX_0001, todoTableName);
+			return;
+		}
+		//（参考）テーブル作成の実装例
 	    //https://docs.aws.amazon.com/ja_jp/sdk-for-java/latest/developer-guide/examples-dynamodb-enhanced.html#dynamodb-enhanced-mapper-beantable
 	    //https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javav2/example_code/dynamodb/src/main/java/com/example/dynamodb/EnhancedCreateTable.java
+
+		//Todoテーブル作成
 	    DynamoDbTable<TodoTableItem> todoTable = enhancedClient.table(todoTableName, TableSchema.fromBean(TodoTableItem.class));
 	    todoTable.createTable();
-	    	    
-	}
-
-	/**
-	 * DynamoDB Local終了
-	 * @throws Exception
-	 */
-	@PreDestroy
-	public void shutdown() throws Exception {
-		if (server != null) {
-			server.stop();
-		}
+	    appLogger.info(MessageIds.I_EX_0002, todoTableName);	    
 	}
 
 }

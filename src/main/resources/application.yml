@@ -14,3 +14,7 @@ spring:
 
   lifecycle:
     timeout-per-shutdown-phase: 20s   
+
+aws:
+  dynamodb:
+    todo-tablename: Todo

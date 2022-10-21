@@ -26,14 +26,14 @@
         * [IntelliJへのプラグインインストール](https://projectlombok.org/setup/intellij)
     * [Mapstruct](https://mapstruct.org/)
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
-* ローカルでのDynamoDBのアイテムの確認に、dynamodb-adminを使うと便利である。
+* DynamoDBLocalのテーブルアイテムの確認に、dynamodb-adminを使うと便利である。
     * [dynamodb-admin](https://github.com/aaronshaf/dynamodb-admin)
         * [dynamodb-adminのインストール＆起動方法](https://github.com/aaronshaf/dynamodb-admin#use-as-globally-installed-app)
         * 起動方法
-            * Profile「dev」の場合、DynamoDBローカルが起動するようになっている
+            * Profile「dev」の場合、DynamoDBLocalが起動するようになっている
             * この時、DynamoDBローカルのテーブルの状況を確認する際にdynamodb-adminを以下のように起動すればよい。
         ```sh
-        set DYNAMO_ENDPOINT=http://localhost:8000
+        set DYNAMO_ENDPOINT=http://localhost:18000
         dynamodb-admin
         ```
 
@@ -109,6 +109,14 @@
           "message": "対象のTodoがありません。"
         }        
         ```        
+
+## AWS DynamoDBと連携したAP動作確認
+* デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、DynamoDBLocalを使用するようになっている。
+* AWS上のDynamoDBにアクセスする動作に変更する場合は、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=prod」を設定する等して実行する。
+* AP実行時に、DynamoDBにTodoテーブルがない場合には、テーブル作成するようになっている。
+    * APからは自動的に削除しないので、AWSの無駄な利用料金がかからないよう、動作確認後不要になった時点でTodoテーブルの削除を忘れないようにすること。
+* APがDynamoDBにアクセスする権限が必要なので、開発端末上での実行する場合はDynamoDBのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにDynamoDBのアクセス権限を持ったIAMロールが付与されている必要がある。
+
 
 ## ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。

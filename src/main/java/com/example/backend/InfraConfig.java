@@ -18,15 +18,10 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 public class InfraConfig {
 
 	//DBアクセスしない場合のスタブ	
-	@Bean
+	//@Bean
 	public TodoRepository todoRepositoryStub() {
 		return new TodoRepositoryStub();
 	}
-	
-	//TODO: DynamoDBアクセス用に切替
-	//@Bean
-	public TodoRepository todoRepositoryForDynamoDB(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-		return new TodoRepositoryForDynamoDB(dynamoDbEnhancedClient);
-	}
+
 
 }
