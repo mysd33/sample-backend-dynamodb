@@ -41,7 +41,7 @@ public class TodoRestController {
     @GetMapping("{todoId}") 
     @ResponseStatus(HttpStatus.OK)
     public TodoResource getTodo(@PathVariable("todoId") String todoId) {
-        Todo todo = todoService.findOne(todoId);
+        Todo todo = todoService.findOne(todoId); 
         TodoResource todoResource = TodoMapper.INSTANCE.modelToResource(todo);
         return todoResource;
     }
@@ -50,6 +50,14 @@ public class TodoRestController {
     @ResponseStatus(HttpStatus.CREATED) 
     public TodoResource postTodos(@RequestBody @Validated TodoResource todoResource) { 
         Todo createdTodo = todoService.create(TodoMapper.INSTANCE.resourceToModel(todoResource));
+        TodoResource createdTodoResponse = TodoMapper.INSTANCE.modelToResource(createdTodo);
+        return createdTodoResponse;
+    }
+    
+    @PostMapping("batch")
+    @ResponseStatus(HttpStatus.CREATED) 
+    public TodoResource postTodosForBatch(@RequestBody @Validated TodoResource todoResource) { 
+        Todo createdTodo = todoService.createForBatch(TodoMapper.INSTANCE.resourceToModel(todoResource));
         TodoResource createdTodoResponse = TodoMapper.INSTANCE.modelToResource(createdTodo);
         return createdTodoResponse;
     }
