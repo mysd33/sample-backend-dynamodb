@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.example.fw.common.dynamodb.DynamoDBProdIntializer;
+import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
+
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -20,10 +23,15 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDBProdConfig {
 	@Value("${aws.dynamodb.region:ap-northeast-1}")
 	private String regionName;
-
+	
+	@Bean
+	public DynamoDBTableInitializer dynamoDBTableInitializer() {
+		return new SampleBackendDynamoDBTableInitializer(dynamoDbClient(), dynamoDbEnhancedClient());
+	}
+	
 	@Bean
 	public DynamoDBProdIntializer dynamoDBProdInitializer(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-		return new DynamoDBProdIntializer(dynamoDbClient(), dynamoDbEnhancedClient());
+		return new DynamoDBProdIntializer(dynamoDBTableInitializer());
 	}
 
 	@Bean

@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
+import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
+import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
@@ -30,8 +32,13 @@ public class DynamoDBLocalConfig {
 	private String port;
 
 	@Bean
+	public DynamoDBTableInitializer dynamoDBTableInitializer() {
+		return new SampleBackendDynamoDBTableInitializer(dynamoDbClient(), dynamoDbEnhancedClient());
+	}
+	
+	@Bean
 	public DynamoDBLocalExecutor dynamoDBLocalExecutor() {
-		return new DynamoDBLocalExecutor(dynamoDbEnhancedClient(), port);
+		return new DynamoDBLocalExecutor(port, dynamoDBTableInitializer());
 	}
 
 	@Bean

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>sample-backend-dynamodb</artifactId>
@@ -15,12 +16,13 @@
 	<description>Spring Boot Backend Sample</description>
 	<properties>
 		<java.version>11</java.version>
+		<awssdk.bom.version>2.17.247</awssdk.bom.version>
 		<spring.cloud-version>2021.0.4</spring.cloud-version>
-		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>		
+		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<!-- MapStruct -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
-		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>		
+		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 	</properties>
 
 	<dependencies>
@@ -62,7 +64,7 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-		
+
 		<!-- Spring AOP -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -72,7 +74,7 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
-				
+
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -80,18 +82,24 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!--  MapStruct -->		
+		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
-		
-		<!--  Logstash Logback Encoder -->		
+
+		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
+		</dependency>
+
+		<!-- AWS SDK DynamoDB -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb</artifactId>
 		</dependency>
 		
 		<!-- Spring Cloud Sleuth -->
@@ -99,14 +107,14 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
-		
+
 		<!-- DynamoDB Local -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>DynamoDBLocal</artifactId>
 			<version>[1.12,2.0)</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.almworks.sqlite4java</groupId>
 			<artifactId>sqlite4java-win32-x64</artifactId>
@@ -115,9 +123,17 @@
 			<!-- <scope>test</scope> -->
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
+			<!-- AWS SDK -->
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${awssdk.bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>		
 			<!-- Spring Cloud -->
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
@@ -139,7 +155,7 @@
 
 	<build>
 		<plugins>
-			<!-- MapStruct -->		
+			<!-- MapStruct -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -165,7 +181,7 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
-			</plugin>		
+			</plugin>
 			<!-- Lombok -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
