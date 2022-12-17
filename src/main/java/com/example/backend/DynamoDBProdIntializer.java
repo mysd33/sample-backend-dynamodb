@@ -24,7 +24,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDBProdIntializer {
 	private final DynamoDbClient client;
 	private final DynamoDbEnhancedClient enhancedClient;
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 				
 	@Value("${aws.dynamodb.todo-tablename:Todo}")
 	private String todoTableName; 
