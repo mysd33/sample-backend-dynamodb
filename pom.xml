@@ -149,7 +149,7 @@
 
 	<repositories>
 		<repository>
-			<id>dynamodb-local-oregon</id>
+			<id>dynamodb-local-tokyo</id>
 			<name>DynamoDB Local Release Repository</name>
 			<url>https://s3.ap-northeast-1.amazonaws.com/dynamodb-local-tokyo/release</url>
 		</repository>
