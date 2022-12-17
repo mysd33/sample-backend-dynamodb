@@ -9,7 +9,7 @@ import com.example.backend.domain.model.Todo;
  * TodoとTodoTableのオブジェクトマッパークラス 
  *
  */
-@Mapper
+@Mapper(componentModel = "spring")
 public interface TodoTableItemMapper {
 	/**
 	 * マッパーインスタンス
