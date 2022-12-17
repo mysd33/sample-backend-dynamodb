@@ -23,6 +23,8 @@
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+		<dynamodb-local.version>[1.12,2.0)</dynamodb-local.version>
+		<sqlite4java-win32-x64.version>1.0.392</sqlite4java-win32-x64.version>		
 	</properties>
 
 	<dependencies>
@@ -95,12 +97,6 @@
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
 		</dependency>
-
-		<!-- AWS SDK DynamoDB -->
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>dynamodb</artifactId>
-		</dependency>
 		
 		<!-- Spring Cloud Sleuth -->
 		<dependency>
@@ -108,18 +104,24 @@
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
 
+		<!-- AWS SDK DynamoDB -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb</artifactId>
+		</dependency>
+		
 		<!-- DynamoDB Local -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>DynamoDBLocal</artifactId>
-			<version>[1.12,2.0)</version>
+			<version>${dynamodb-local.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.almworks.sqlite4java</groupId>
 			<artifactId>sqlite4java-win32-x64</artifactId>
 			<type>dll</type>
-			<version>1.0.392</version>
+			<version>${sqlite4java-win32-x64.version}</version>
 			<!-- <scope>test</scope> -->
 		</dependency>
 	</dependencies>
