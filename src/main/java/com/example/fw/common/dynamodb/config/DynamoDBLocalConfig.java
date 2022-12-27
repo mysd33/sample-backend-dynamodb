@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.fw.common.dynamodb.config;
 
 import java.net.URI;
 
@@ -30,28 +30,36 @@ public class DynamoDBLocalConfig {
 	private String regionName;
 	@Value("${aws.dynamodb.port:8000}")
 	private String port;
-
-	@Bean
-	public DynamoDBTableInitializer dynamoDBTableInitializer() {
-		return new SampleBackendDynamoDBTableInitializer(dynamoDbClient(), dynamoDbEnhancedClient());
-	}
 	
+	/**
+	 * DynamoDB Local起動クラス
+	 */
 	@Bean
-	public DynamoDBLocalExecutor dynamoDBLocalExecutor() {
-		return new DynamoDBLocalExecutor(port, dynamoDBTableInitializer());
+	public DynamoDBLocalExecutor dynamoDBLocalExecutor(DynamoDBTableInitializer dynamoDBTableInitializer) {
+		return new DynamoDBLocalExecutor(port, dynamoDBTableInitializer);
 	}
 
+	/**
+	 * DynamoDB Localに接続するDynamoDBClient
+	 */
 	@Bean
 	public DynamoDbClient dynamoDbClient() {
 		Region region = Region.of(regionName);
 		return DynamoDbClient.builder().region(region).endpointOverride(URI.create("http://localhost:" + port)).build();
 	}
 
+	/**
+	 * DynamoDBEnhancedClient
+	 * @return
+	 */
 	@Bean
 	public DynamoDbEnhancedClient dynamoDbEnhancedClient() {
 		return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient()).build();
 	}
 
+	/**
+	 * 終了時のDynamoDBClientの接続を切断
+	 */
 	@PreDestroy
 	public void closeDynamoDbEnhancedClient() {
 		dynamoDbClient().close();

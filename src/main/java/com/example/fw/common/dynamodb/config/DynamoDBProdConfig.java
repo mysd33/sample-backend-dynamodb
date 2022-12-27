@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.fw.common.dynamodb.config;
 
 import javax.annotation.PreDestroy;
 
@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import com.example.fw.common.dynamodb.DynamoDBProdIntializer;
-import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
@@ -24,27 +21,27 @@ public class DynamoDBProdConfig {
 	@Value("${aws.dynamodb.region:ap-northeast-1}")
 	private String regionName;
 	
-	@Bean
-	public DynamoDBTableInitializer dynamoDBTableInitializer() {
-		return new SampleBackendDynamoDBTableInitializer(dynamoDbClient(), dynamoDbEnhancedClient());
-	}
-	
-	@Bean
-	public DynamoDBProdIntializer dynamoDBProdInitializer(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-		return new DynamoDBProdIntializer(dynamoDBTableInitializer());
-	}
-
+	/**
+	 * DynamoDBClient
+	 */
 	@Bean
 	public DynamoDbClient dynamoDbClient() {
 		Region region = Region.of(regionName);
 		return DynamoDbClient.builder().region(region).build();
 	}
-
+	
+	/**
+	 * DynamoDBEnhancedClient
+	 * @return
+	 */
 	@Bean
 	public DynamoDbEnhancedClient dynamoDbEnhancedClient() {
 		return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient()).build();
 	}
 
+	/**
+	 * 終了時のDynamoDBClientの接続を切断
+	 */
 	@PreDestroy
 	public void closeDynamoDbEnhancedClient() {
 		dynamoDbClient().close();
