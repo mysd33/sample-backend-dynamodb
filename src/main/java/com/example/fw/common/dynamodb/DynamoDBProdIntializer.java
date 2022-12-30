@@ -4,6 +4,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import com.amazonaws.xray.AWSXRay;
+
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,8 +23,9 @@ public class DynamoDBProdIntializer {
 	 * @throws Exception
 	 */
 	@PostConstruct
-	public void startup() throws Exception {
+	public void startup() throws Exception {				
 		// AP起動時動作確認用にテーブル作成
+		AWSXRay.beginSegment("DynamoDBProdIntializer");
 		dynamoDBTableInitializer.createTables();
 	}
 

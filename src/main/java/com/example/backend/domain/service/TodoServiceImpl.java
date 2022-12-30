@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * TodoServiceの実装クラス
  */
+@XRayEnabled
 @Service
 @RequiredArgsConstructor
 public class TodoServiceImpl implements TodoService {

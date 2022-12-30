@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.amazonaws.xray.interceptors.TracingInterceptor;
+import com.example.fw.common.dynamodb.DynamoDBProdIntializer;
+import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
+
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -20,6 +25,16 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDBProdConfig {
 	@Value("${aws.dynamodb.region:ap-northeast-1}")
 	private String regionName;
+
+	
+	/**
+	 * DynamoDB 初期テーブル作成クラス
+	 */	
+	@Bean
+	public DynamoDBProdIntializer dynamoDBProdIntializer(DynamoDBTableInitializer dynamoDBTableInitializer) {
+		return new DynamoDBProdIntializer(dynamoDBTableInitializer);
+	}
+
 	
 	/**
 	 * DynamoDBClient
@@ -27,7 +42,10 @@ public class DynamoDBProdConfig {
 	@Bean
 	public DynamoDbClient dynamoDbClient() {
 		Region region = Region.of(regionName);
-		return DynamoDbClient.builder().region(region).build();
+		return DynamoDbClient.builder().region(region)
+				.overrideConfiguration(ClientOverrideConfiguration.builder()
+						.addExecutionInterceptor(new TracingInterceptor()).build())				
+				.build();
 	}
 	
 	/**

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
 
@@ -24,6 +25,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 /**
  * TodoRepositoryのDynamoDBアクセス実装
  */
+@XRayEnabled
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDB implements TodoRepository {
