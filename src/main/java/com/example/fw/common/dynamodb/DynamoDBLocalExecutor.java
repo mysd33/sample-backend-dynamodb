@@ -5,7 +5,6 @@ import javax.annotation.PreDestroy;
 
 import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
-import com.amazonaws.xray.AWSXRay;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,7 +36,6 @@ public class DynamoDBLocalExecutor {
 		server.start();
 				
 		// AP起動時動作確認用にテーブル作成
-		AWSXRay.beginSegment("DynamoDBLocalExecutor");
 		dynamoDBTableInitializer.createTables();
 	}
 
