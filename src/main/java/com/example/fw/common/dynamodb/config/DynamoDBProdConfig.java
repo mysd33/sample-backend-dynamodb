@@ -43,8 +43,6 @@ public class DynamoDBProdConfig {
 	public DynamoDbClient dynamoDbClient() {
 		Region region = Region.of(regionName);
 		return DynamoDbClient.builder().region(region)
-				.overrideConfiguration(ClientOverrideConfiguration.builder()
-						.addExecutionInterceptor(new TracingInterceptor()).build())				
 				.build();
 	}
 	

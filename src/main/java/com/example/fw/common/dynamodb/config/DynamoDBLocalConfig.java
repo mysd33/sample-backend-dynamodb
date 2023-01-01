@@ -49,8 +49,6 @@ public class DynamoDBLocalConfig {
 		Region region = Region.of(regionName);
 		return DynamoDbClient.builder().region(region)
 				.endpointOverride(URI.create("http://localhost:" + port))
-				.overrideConfiguration(ClientOverrideConfiguration.builder()
-						.addExecutionInterceptor(new TracingInterceptor()).build())
 				.build();
 	}
 
