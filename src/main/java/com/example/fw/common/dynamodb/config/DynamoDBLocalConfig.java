@@ -2,8 +2,6 @@ package com.example.fw.common.dynamodb.config;
 
 import java.net.URI;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +14,6 @@ import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -42,10 +39,23 @@ public class DynamoDBLocalConfig {
 	}
 
 	/**
-	 * DynamoDB Localに接続するDynamoDBClient
+	 * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースなし）
 	 */
+	@Profile("!xray")
 	@Bean
-	public DynamoDbClient dynamoDbClient() {
+	public DynamoDbClient dynamoDbClientWithoutXRay() {
+		Region region = Region.of(regionName);
+		return DynamoDbClient.builder().region(region)
+				.endpointOverride(URI.create("http://localhost:" + port))
+				.build();
+	}
+
+	/**
+	 * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースあり）
+	 */
+	@Profile("xray")
+	@Bean
+	public DynamoDbClient dynamoDbClientWithXRay() {
 		Region region = Region.of(regionName);
 		return DynamoDbClient.builder().region(region)
 				.endpointOverride(URI.create("http://localhost:" + port))
@@ -54,22 +64,6 @@ public class DynamoDBLocalConfig {
 						.addExecutionInterceptor(new TracingInterceptor()).build())
 				.build();
 	}
-
-	/**
-	 * DynamoDBEnhancedClient
-	 * @return
-	 */
-	@Bean
-	public DynamoDbEnhancedClient dynamoDbEnhancedClient() {
-		return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient()).build();
-	}
-
-	/**
-	 * 終了時のDynamoDBClientの接続を切断
-	 */
-	@PreDestroy
-	public void closeDynamoDbEnhancedClient() {
-		dynamoDbClient().close();
-	}
+	
 
 }

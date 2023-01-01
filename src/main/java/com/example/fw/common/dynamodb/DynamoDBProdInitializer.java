@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  * DynamoDB 本番向けにAP起動時初回テーブル作成するクラス 
  */
 @RequiredArgsConstructor
-public class DynamoDBProdIntializer {
+public class DynamoDBProdInitializer {
 	private final DynamoDBTableInitializer dynamoDBTableInitializer;
 			
 	@Value("${aws.dynamodb.todo-tablename:Todo}")

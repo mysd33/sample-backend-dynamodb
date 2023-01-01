@@ -6,10 +6,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.amazonaws.xray.javax.servlet.AWSXRayServletFilter;
 import com.amazonaws.xray.spring.aop.BaseAbstractXRayInterceptor;
 
+@Profile("xray")
 @Aspect
 @Configuration
 public class XRayConfig extends BaseAbstractXRayInterceptor {
