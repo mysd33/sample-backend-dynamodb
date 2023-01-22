@@ -8,9 +8,9 @@ import com.amazonaws.xray.AWSXRay;
 @SpringBootApplication
 public class SampleBackendDynamodbApplication {
 
-	public static void main(String[] args) {
-		AWSXRay.beginSegment("sample-backend-dynamodb");
-		SpringApplication.run(SampleBackendDynamodbApplication.class, args);
-	}
+    public static void main(String[] args) {
+        AWSXRay.beginSegment("sample-backend-dynamodb");
+        SpringApplication.run(SampleBackendDynamodbApplication.class, args);
+    }
 
 }

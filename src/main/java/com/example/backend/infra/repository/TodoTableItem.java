@@ -15,22 +15,22 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamoDbBean
-public class TodoTableItem {	
-	// ID
-	private String todoId;
-	// タイトル
-	private String todoTitle;
-	// 完了したかどうか
-	private boolean finished;
-		
-	// 作成日時
-	private String createdAt;
-	//TODO: Instant型に変更
-	//private Instant createAt;
+public class TodoTableItem {
+    // ID
+    private String todoId;
+    // タイトル
+    private String todoTitle;
+    // 完了したかどうか
+    private boolean finished;
 
-	@DynamoDbPartitionKey
-	public String getTodoId() {
-		return todoId;
-	}
+    // 作成日時
+    private String createdAt;
+    // TODO: Instant型に変更
+    // private Instant createAt;
+
+    @DynamoDbPartitionKey
+    public String getTodoId() {
+        return todoId;
+    }
 
 }

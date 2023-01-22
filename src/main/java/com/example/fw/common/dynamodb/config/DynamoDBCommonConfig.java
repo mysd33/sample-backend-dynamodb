@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+/**
+ * DynamoDBの共通の設定クラス
+ *
+ */
 @Configuration
 public class DynamoDBCommonConfig {
 	@Autowired

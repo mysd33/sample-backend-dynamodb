@@ -6,8 +6,8 @@ package com.example.fw.common.dynamodb;
  * 
  */
 public interface DynamoDBTableInitializer {
-	/**
-	 * テーブルを作成する
-	 */
-	void createTables();
+    /**
+     * テーブルを作成する
+     */
+    void createTables();
 }

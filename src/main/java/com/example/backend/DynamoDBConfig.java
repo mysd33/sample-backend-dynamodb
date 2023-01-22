@@ -10,13 +10,17 @@ import com.example.fw.common.dynamodb.config.DynamoDBConfigPackage;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+/**
+ * DynamoDBの設定クラス
+ *
+ */
 @Configuration
 @ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class })
 public class DynamoDBConfig {
 
-	@Bean
-	public DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
-			DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-		return new SampleBackendDynamoDBTableInitializer(dynamoDbClient, dynamoDbEnhancedClient);
-	}
+    @Bean
+    public DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
+            DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        return new SampleBackendDynamoDBTableInitializer(dynamoDbClient, dynamoDbEnhancedClient);
+    }
 }

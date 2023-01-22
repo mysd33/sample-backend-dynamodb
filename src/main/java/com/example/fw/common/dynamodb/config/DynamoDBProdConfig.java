@@ -20,41 +20,39 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @Configuration
 @Profile("production")
 public class DynamoDBProdConfig {
-	@Value("${aws.dynamodb.region:ap-northeast-1}")
-	private String regionName;
+    @Value("${aws.dynamodb.region:ap-northeast-1}")
+    private String regionName;
 
-	
-	/**
-	 * DynamoDB 初期テーブル作成クラス
-	 */	
-	@Bean
-	public DynamoDBProdInitializer dynamoDBProdIntializer(DynamoDBTableInitializer dynamoDBTableInitializer) {
-		return new DynamoDBProdInitializer(dynamoDBTableInitializer);
-	}
+    /**
+     * DynamoDB 初期テーブル作成クラス
+     */
+    @Bean
+    public DynamoDBProdInitializer dynamoDBProdIntializer(DynamoDBTableInitializer dynamoDBTableInitializer) {
+        return new DynamoDBProdInitializer(dynamoDBTableInitializer);
+    }
 
-	/**
-	 * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースなし）
-	 */
-	@Profile("!xray")
-	@Bean
-	public DynamoDbClient dynamoDbClientWithoutXRay() {
-		Region region = Region.of(regionName);
-		return DynamoDbClient.builder().region(region).build();
-	}
-	
-	/**
-	 * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースあり）
-	 */
-	@Profile("xray")
-	@Bean
-	public DynamoDbClient dynamoDbClientWithXRay() {
-		Region region = Region.of(regionName);
-		return DynamoDbClient.builder().region(region)
-				//個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-				.overrideConfiguration(ClientOverrideConfiguration.builder()
-						.addExecutionInterceptor(new TracingInterceptor()).build())
-				.build();
-	}
+    /**
+     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースなし）
+     */
+    @Profile("!xray")
+    @Bean
+    public DynamoDbClient dynamoDbClientWithoutXRay() {
+        Region region = Region.of(regionName);
+        return DynamoDbClient.builder().region(region).build();
+    }
 
-	
+    /**
+     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースあり）
+     */
+    @Profile("xray")
+    @Bean
+    public DynamoDbClient dynamoDbClientWithXRay() {
+        Region region = Region.of(regionName);
+        return DynamoDbClient.builder().region(region)
+                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
+                .overrideConfiguration(
+                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .build();
+    }
+
 }

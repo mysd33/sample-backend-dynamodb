@@ -8,12 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
 
-
 /**
  * TodoRepositoryのスタブ実装
  */
 public class TodoRepositoryStub implements TodoRepository {
-    private static final Map<String, Todo> TODO_MAP = new ConcurrentHashMap<String, Todo>();
+    private static final Map<String, Todo> TODO_MAP = new ConcurrentHashMap<>();
 
     @Override
     public Optional<Todo> findById(String todoId) {
