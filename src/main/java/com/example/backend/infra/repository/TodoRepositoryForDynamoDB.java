@@ -1,9 +1,7 @@
 package com.example.backend.infra.repository;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,8 +27,8 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDB implements TodoRepository {
-
     private final DynamoDbEnhancedClient enhancedClient;
+    private final TodoTableItemMapper todoTableItemMapper;
 
     @Value("${aws.dynamodb.todo-tablename:Todo}")
     private String todoTableName;
@@ -44,7 +42,7 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
         DynamoDbTable<TodoTableItem> dynamoDb = createDynamoDBClient();
         Key key = Key.builder().partitionValue(todoId).build();
         TodoTableItem todoItem = dynamoDb.getItem(r -> r.key(key));
-        Todo result = TodoTableItemMapper.INSTANCE.tableItemToModel(todoItem);
+        Todo result = todoTableItemMapper.tableItemToModel(todoItem);
         return Optional.ofNullable(result);
     }
 
@@ -52,17 +50,13 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     public Collection<Todo> findAll() {
         DynamoDbTable<TodoTableItem> dynamoDb = createDynamoDBClient();
         Iterable<TodoTableItem> items = dynamoDb.scan().items();
-        List<Todo> todoList = new ArrayList<>();
-        items.forEach(item -> 
-            todoList.add(TodoTableItemMapper.INSTANCE.tableItemToModel(item))
-        );
-        return todoList;
+        return todoTableItemMapper.tableItemsToModels(items);
     }
 
     @Override
     public void create(Todo todo) {
         DynamoDbTable<TodoTableItem> dynamoDb = createDynamoDBClient();
-        TodoTableItem todoItem = TodoTableItemMapper.INSTANCE.modelToTableItem(todo);
+        TodoTableItem todoItem = todoTableItemMapper.modelToTableItem(todo);
         dynamoDb.putItem(todoItem);
     }
 
