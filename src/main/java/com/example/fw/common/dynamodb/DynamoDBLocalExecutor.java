@@ -14,7 +14,7 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 public class DynamoDBLocalExecutor {
-    private final String port;
+    private final int port;
     private final DynamoDBTableInitializer dynamoDBTableInitializer;
     private DynamoDBProxyServer server = null;
     @Setter
@@ -31,7 +31,7 @@ public class DynamoDBLocalExecutor {
 
         System.setProperty("sqlite4java.library.path", nativeLibsPath);
         // DynamoDB Local起動
-        final String[] localArgs = { "-inMemory", "-port", port };
+        final String[] localArgs = { "-inMemory", "-port", String.valueOf(port) };
         server = ServerRunner.createServerFromCommandLineArgs(localArgs);
         server.start();
 
