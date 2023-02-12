@@ -16,4 +16,5 @@ logging:
     
 aws:
   dynamodb:
-    port: 18000    
+    dynamodblocal:
+      port: 18000

@@ -29,7 +29,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDBLocalConfig {
     @Value("${aws.dynamodb.region:ap-northeast-1}")
     private String regionName;
-    @Value("${aws.dynamodb.port:8000}")
+    @Value("${aws.dynamodb.dynamodblocal.port:8000}")
     private String port;
 
     /**
