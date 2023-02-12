@@ -13,6 +13,8 @@ import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -44,8 +46,17 @@ public class DynamoDBLocalConfig {
     @Profile("!xray")
     @Bean
     public DynamoDbClient dynamoDbClientWithoutXRay() {
+        // ダミーのクレデンシャル
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
+        // @formatter:off        
         Region region = Region.of(regionName);
-        return DynamoDbClient.builder().region(region).endpointOverride(URI.create("http://localhost:" + port)).build();
+        return DynamoDbClient.builder()
+                .region(region)
+                .endpointOverride(URI.create("http://localhost:" + port))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .build();
+        // @formatter:on
+
     }
 
     /**
@@ -54,12 +65,20 @@ public class DynamoDBLocalConfig {
     @Profile("xray")
     @Bean
     public DynamoDbClient dynamoDbClientWithXRay() {
+        // ダミーのクレデンシャル
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
+
         Region region = Region.of(regionName);
-        return DynamoDbClient.builder().region(region).endpointOverride(URI.create("http://localhost:" + port))
+        // @formatter:off    
+        return DynamoDbClient.builder()
+                .region(region)
+                .endpointOverride(URI.create("http://localhost:" + port))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
                 .build();
+        // @formatter:on        
     }
 
 }
