@@ -20,7 +20,7 @@
 		<spring.cloud-version>2021.0.4</spring.cloud-version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
-				<awsxray.bom.version>2.11.0</awsxray.bom.version>
+		<awsxray.bom.version>2.11.0</awsxray.bom.version>
 		<!-- MapStruct -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>

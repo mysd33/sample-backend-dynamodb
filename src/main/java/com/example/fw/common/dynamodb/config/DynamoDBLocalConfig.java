@@ -12,7 +12,6 @@ import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
