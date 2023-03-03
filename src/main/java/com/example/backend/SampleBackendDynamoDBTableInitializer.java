@@ -10,10 +10,14 @@ import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
+import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
 /**
  * 
@@ -44,6 +48,12 @@ public class SampleBackendDynamoDBTableInitializer implements DynamoDBTableIniti
         DynamoDbTable<TodoTableItem> todoTable = enhancedClient.table(todoTableName,
                 TableSchema.fromBean(TodoTableItem.class));
         todoTable.createTable();
-        appLogger.info(MessageIds.I_EX_0002, todoTableName);
+
+        // テーブル作成完了まで待機
+        DynamoDbWaiter dbWaiter = client.waiter();
+        DescribeTableRequest tableRequest = DescribeTableRequest.builder().tableName(todoTableName).build();
+        WaiterResponse<DescribeTableResponse> waiterResponse = dbWaiter.waitUntilTableExists(tableRequest);
+        waiterResponse.matched().response().ifPresent(r -> appLogger.info(MessageIds.I_EX_0002, todoTableName));
+
     }
 }
