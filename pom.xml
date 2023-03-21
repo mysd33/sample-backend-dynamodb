@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<awssdk.bom.version>2.17.247</awssdk.bom.version>
-		<spring.cloud-version>2021.0.6</spring.cloud-version>
+		<spring.cloud-version>2021.0.5</spring.cloud-version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
 		<awsxray.bom.version>2.11.0</awsxray.bom.version>
