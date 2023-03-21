@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: sample-backend    
+    name: sample-backend-dynamodb
   profiles:
     active:
     - dev
@@ -19,3 +19,6 @@ spring:
 aws:
   dynamodb:
     todo-tablename: Todo
+    
+  xray:
+    tracing-filter-name: sample-backend-dynamodb
