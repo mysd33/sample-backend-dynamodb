@@ -1,5 +1,7 @@
 package com.example.fw.common.dynamodb.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -8,7 +10,6 @@ import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBProdInitializer;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -19,11 +20,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @Configuration
 @Profile("production")
+@EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
 public class DynamoDBProdConfig {
-    @Bean
-    public DynamoDBConfigurationProperties dynamoDBConfigurationProperties() {
-        return new DynamoDBConfigurationProperties();
-    }
+    @Autowired
+    private DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
 
     /**
      * DynamoDB 初期テーブル作成クラス
@@ -39,7 +39,7 @@ public class DynamoDBProdConfig {
     @Profile("!xray")
     @Bean
     public DynamoDbClient dynamoDbClientWithoutXRay() {        
-        Region region = Region.of(dynamoDBConfigurationProperties().getRegion());
+        Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder().region(region).build();
     }
 
@@ -49,7 +49,7 @@ public class DynamoDBProdConfig {
     @Profile("xray")
     @Bean
     public DynamoDbClient dynamoDbClientWithXRay() {        
-        Region region = Region.of(dynamoDBConfigurationProperties().getRegion());
+        Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder().region(region)
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(

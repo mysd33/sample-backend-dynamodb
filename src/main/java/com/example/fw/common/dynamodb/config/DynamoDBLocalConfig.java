@@ -2,7 +2,9 @@ package com.example.fw.common.dynamodb.config;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,19 +27,20 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @Configuration
 @Profile("dev")
 @ConditionalOnClass(DynamoDBProxyServer.class)
+@EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
 public class DynamoDBLocalConfig {    
+    private static final String HTTP_LOCALHOST = "http://localhost:";
+    private static final String DUMMY = "dummy";
     
-    @Bean
-    public DynamoDBConfigurationProperties dynamoDBConfigurationProperties() {
-        return new DynamoDBConfigurationProperties();
-    }    
+    @Autowired
+    private DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
     
     /**
      * DynamoDB Local起動クラス
      */
     @Bean
     public DynamoDBLocalExecutor dynamoDBLocalExecutor(DynamoDBTableInitializer dynamoDBTableInitializer) {
-        return new DynamoDBLocalExecutor(dynamoDBConfigurationProperties().getDynamodblocal().getPort(), dynamoDBTableInitializer);
+        return new DynamoDBLocalExecutor(dynamoDBConfigurationProperties.getDynamodblocal().getPort(), dynamoDBTableInitializer);
     }
 
     /**
@@ -47,12 +50,12 @@ public class DynamoDBLocalConfig {
     @Bean
     public DynamoDbClient dynamoDbClientWithoutXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);
         // @formatter:off        
-        Region region = Region.of(dynamoDBConfigurationProperties().getRegion());
+        Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()
                 .region(region)
-                .endpointOverride(URI.create("http://localhost:" + dynamoDBConfigurationProperties().getDynamodblocal().getPort()))
+                .endpointOverride(URI.create(HTTP_LOCALHOST + dynamoDBConfigurationProperties.getDynamodblocal().getPort()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
         // @formatter:on
@@ -66,13 +69,14 @@ public class DynamoDBLocalConfig {
     @Bean
     public DynamoDbClient dynamoDbClientWithXRay() {
         // ダミーのクレデンシャル
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
 
-        Region region = Region.of(dynamoDBConfigurationProperties().getRegion());
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);
+
+        Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         // @formatter:off    
         return DynamoDbClient.builder()
                 .region(region)
-                .endpointOverride(URI.create("http://localhost:" + dynamoDBConfigurationProperties().getDynamodblocal().getPort()))
+                .endpointOverride(URI.create(HTTP_LOCALHOST + dynamoDBConfigurationProperties.getDynamodblocal().getPort()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
