@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
+//import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @Configuration
 @Profile("dev")
-@ConditionalOnClass(DynamoDBProxyServer.class)
+//@ConditionalOnClass(DynamoDBProxyServer.class)
 @EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
 public class DynamoDBLocalConfig {    
     private static final String HTTP_LOCALHOST = "http://localhost:";

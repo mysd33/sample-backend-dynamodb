@@ -108,12 +108,19 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb-enhanced</artifactId>
+		</dependency>
+		
 		<!-- DynamoDB Local -->
+		<!-- jakarta対応の予定なしのため、SpringBoot3ではDynamoDBLocalの組み込み起動が現状できない。外部プロセス起動にしたためコメントアウト -->
+		<!--
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>DynamoDBLocal</artifactId>
 			<version>${dynamodb-local.version}</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.almworks.sqlite4java</groupId>
 			<artifactId>sqlite4java-win32-x64</artifactId>

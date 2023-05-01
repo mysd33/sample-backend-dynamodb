@@ -1,5 +1,7 @@
 package com.example.fw.common.dynamodb;
 
+import java.io.File;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
@@ -14,13 +16,10 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 public class DynamoDBLocalExecutor {
-    // TODO: DynamoDB Localがjakarta対応の予定なしのため、SpringBoot3での、DynamoDBLocalの組み込み起動が現状できない。
-    //　以下の例のように、あらかじめDynamoDB Localを外部プロセスとして起動するしかない
-    // java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -port 18000
-
     private final int port;
     private final DynamoDBTableInitializer dynamoDBTableInitializer;
 //    private DynamoDBProxyServer server = null;
+    private Process process = null;
     @Setter
     private String nativeLibsPath = "native-libs";
 
@@ -39,6 +38,23 @@ public class DynamoDBLocalExecutor {
         server = ServerRunner.createServerFromCommandLineArgs(localArgs);
         server.start();
 */
+        // DynamoDB Localがjakarta対応の予定なしのため、SpringBoot3ではDynamoDBLocalの組み込み起動が現状できない。
+        //　以下の例のように、あらかじめDynamoDB Localを外部プロセスとして起動するように変更している。
+        // https://itecnote.com/tecnote/how-to-launch-local-dynamodb-programmatically/
+        ProcessBuilder processBuilder = new ProcessBuilder("java",
+                "-Djava.library.path=./DynamoDBLocal_lib",
+                "-jar",
+                "DynamoDBLocal.jar",
+                "-sharedDb",
+                "-inMemory",
+                "-port",
+                String.valueOf(port))
+                .inheritIO()
+                .directory(new File("dynamodb_local"));
+        
+        process = processBuilder.start();
+        
+        
         // AP起動時動作確認用にテーブル作成
         dynamoDBTableInitializer.createTables();
     }
@@ -54,6 +70,10 @@ public class DynamoDBLocalExecutor {
         if (server != null) {
             server.stop();
         }*/
+        
+        if (process != null) {
+            process.destroy();
+        }
     }
 
 }
