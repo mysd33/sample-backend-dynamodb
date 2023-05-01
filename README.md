@@ -15,7 +15,7 @@
 * sample-backend（またはsample-backend-dynamodb)
     * 本プロジェクト。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを~~組み込みで~~起動し、接続するようになっている。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * sample-batch
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
@@ -59,12 +59,6 @@
         ```
 
 ## EclipseやIntelliJ等での動作確認
-* AP起動前に、DynamoDB Localを起動しておく必要がある。
-    * DynamoDB LocalがJakartaパッケージに未対応のため、Spring Boot3.0対応に伴い、AP起動時に組み込み起動できなくなったため
-    * [AWSのダウンロードサイト](https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html)からzipをダウンロードして展開し、以下のコマンドで起動
-    ```sh
-    java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -port 18000
-    ```
 * APIの動作確認のため、PostmanやTarend REST ClientのようなREST APIクライントツールが必要
     * [Postman API Client](https://www.postman.com/product/api-client/)
     * [Tarend REST Client(DHC REST Client)](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm)
