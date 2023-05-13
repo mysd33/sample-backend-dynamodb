@@ -175,15 +175,7 @@
 				<version>${spring.cloud-version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<!-- Micrometer Tracing -->
-			<dependency>
-				<groupId>io.micrometer</groupId>
-				<artifactId>micrometer-tracing-bom</artifactId>
-				<version>${micrometer-tracing.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>		
+			</dependency>	
 		</dependencies>
 	</dependencyManagement>
 	<repositories>
