@@ -47,16 +47,19 @@
         * [IntelliJへのプラグインインストール](https://projectlombok.org/setup/intellij)
     * [Mapstruct](https://mapstruct.org/)
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
-* DynamoDBLocalのテーブルアイテムの確認に、dynamodb-adminを使うと便利である。
+* Profile「dev」の場合、DynamoDBLocalが起動するようになっている。DynamoDB Localのテーブルアイテムの確認に、dynamodb-adminまたはNoSQL Workbenchを使うと便利である。    
     * [dynamodb-admin](https://github.com/aaronshaf/dynamodb-admin)
         * [dynamodb-adminのインストール＆起動方法](https://github.com/aaronshaf/dynamodb-admin#use-as-globally-installed-app)
-        * 起動方法
-            * Profile「dev」の場合、DynamoDBLocalが起動するようになっている
-            * この時、DynamoDBローカルのテーブルの状況を確認する際にdynamodb-adminを以下のように起動すればよい。
+        * 起動方法            
+            * dynamodb-adminを以下のように起動する
         ```sh
         set DYNAMO_ENDPOINT=http://localhost:18000
         dynamodb-admin
         ```
+    * [NoSQL Workbench](https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/workbench.settingup.html)
+        * DynamoDB Localへの接続方法
+            * 「Operation builder」の画面で「+Add connection」ボタンをクリック
+            * 「DynamoDB local」を選択し、Portを18000に設定し、「Connect」ボタンをクリック
 
 ## EclipseやIntelliJ等での動作確認
 * APIの動作確認のため、PostmanやTarend REST ClientのようなREST APIクライントツールが必要
