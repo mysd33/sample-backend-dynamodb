@@ -11,6 +11,7 @@ import com.example.fw.common.dynamodb.DynamoDBProdInitializer;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -38,9 +39,12 @@ public class DynamoDBProdConfig {
      */
     @Profile("!xray")
     @Bean
-    public DynamoDbClient dynamoDbClientWithoutXRay() {        
+    public DynamoDbClient dynamoDbClientWithoutXRay() {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
-        return DynamoDbClient.builder().region(region).build();
+        return DynamoDbClient.builder()//
+                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .region(region)//
+                .build();
     }
 
     /**
@@ -48,9 +52,11 @@ public class DynamoDBProdConfig {
      */
     @Profile("xray")
     @Bean
-    public DynamoDbClient dynamoDbClientWithXRay() {        
+    public DynamoDbClient dynamoDbClientWithXRay() {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
-        return DynamoDbClient.builder().region(region)
+        return DynamoDbClient.builder()//
+                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .region(region)
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())

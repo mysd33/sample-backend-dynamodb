@@ -55,9 +55,6 @@
             * この時、DynamoDBローカルのテーブルの状況を確認する際にdynamodb-adminを以下のように起動すればよい。
         ```sh
         set DYNAMO_ENDPOINT=http://localhost:18000
-        set AWS_REGION=ap-northeast-1
-        set AWS_ACCESS_KEY_ID=dummy
-        set AWS_SECRET_ACCESS_KEY=dummy
         dynamodb-admin
         ```
 

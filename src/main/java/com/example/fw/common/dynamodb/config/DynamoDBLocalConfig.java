@@ -3,7 +3,6 @@ package com.example.fw.common.dynamodb.config;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +16,7 @@ import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -26,21 +26,21 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  */
 @Configuration
 @Profile("dev")
-//@ConditionalOnClass(DynamoDBProxyServer.class)
 @EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
-public class DynamoDBLocalConfig {    
+public class DynamoDBLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
     private static final String DUMMY = "dummy";
-    
+
     @Autowired
     private DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
-    
+
     /**
      * DynamoDB Local起動クラス
      */
     @Bean
     public DynamoDBLocalExecutor dynamoDBLocalExecutor(DynamoDBTableInitializer dynamoDBTableInitializer) {
-        return new DynamoDBLocalExecutor(dynamoDBConfigurationProperties.getDynamodblocal().getPort(), dynamoDBTableInitializer);
+        return new DynamoDBLocalExecutor(dynamoDBConfigurationProperties.getDynamodblocal().getPort(),
+                dynamoDBTableInitializer);
     }
 
     /**
@@ -54,6 +54,7 @@ public class DynamoDBLocalConfig {
         // @formatter:off        
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))                
                 .region(region)
                 .endpointOverride(URI.create(HTTP_LOCALHOST + dynamoDBConfigurationProperties.getDynamodblocal().getPort()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
@@ -75,6 +76,7 @@ public class DynamoDBLocalConfig {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         // @formatter:off    
         return DynamoDbClient.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .region(region)
                 .endpointOverride(URI.create(HTTP_LOCALHOST + dynamoDBConfigurationProperties.getDynamodblocal().getPort()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
