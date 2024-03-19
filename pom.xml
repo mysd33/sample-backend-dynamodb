@@ -26,9 +26,7 @@
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<!-- DynamoDB Local -->
-		<dynamodb-local.version>2.2.1</dynamodb-local.version>
-		<!-- jetty issue workaround version -->
-		<jetty.workaround.version>11.0.15</jetty.workaround.version>
+		<dynamodb-local.version>2.3.0</dynamodb-local.version>
 	</properties>
 	<dependencies>
 		<!-- Spring Boot Web -->
@@ -191,54 +189,9 @@
 				<version>${spring.cloud-version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<!-- DynamoDB jetty version incompatible with Spring Boot 3.2 jetty version -->
-			<!-- https://github.com/awslabs/amazon-dynamodb-local-samples/issues/4 -->
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-io</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-util</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-http</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>			
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-client</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-alpn</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>		
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-alpn-client</artifactId>
-				<version>${jetty.workaround.version}</version>
-			</dependency>
-				
+			</dependency>				
 		</dependencies>
 	</dependencyManagement>
-	<repositories>
-		<repository>
-			<id>dynamodb-local-tokyo</id>
-			<name>DynamoDB Local Release Repository</name>
-			<url>https://s3.ap-northeast-1.amazonaws.com/dynamodb-local-tokyo/release</url>
-		</repository>
-	</repositories>
 	<build>
 		<plugins>
 			<!-- MapStruct -->
