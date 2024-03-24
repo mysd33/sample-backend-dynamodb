@@ -9,14 +9,14 @@ import software.amazon.awssdk.enhanced.dynamodb.model.TransactWriteItemsEnhanced
  * DynamoDbEnhancedClientを利用したDBトランザクションのクラスです。
  *
  */
-public class EnhancedClientDynamoDBTransaction {
+public class DynamoDBEnhancedClientTransaction {
     private final TransactWriteItemsEnhancedRequest.Builder builder;
     private boolean hasTransactionItems = false;
 
     /**
      * コンストラクタ
      */
-    public EnhancedClientDynamoDBTransaction() {
+    public DynamoDBEnhancedClientTransaction() {
         builder = TransactWriteItemsEnhancedRequest.builder();
     }
 
@@ -28,7 +28,7 @@ public class EnhancedClientDynamoDBTransaction {
      * @param conditionCheck      ConditionCheck
      * @return EnhancedClientDynamoDBTransaction
      */
-    public <T> EnhancedClientDynamoDBTransaction addConditionCheck(MappedTableResource<T> mappedTableResource,
+    public <T> DynamoDBEnhancedClientTransaction addConditionCheck(MappedTableResource<T> mappedTableResource,
             ConditionCheck<T> conditionCheck) {
         builder.addConditionCheck(mappedTableResource, conditionCheck);
         return this;
@@ -42,7 +42,7 @@ public class EnhancedClientDynamoDBTransaction {
      * @param item                登録するテーブルのアイテム
      * @return EnhancedClientDynamoDBTransaction
      */
-    public <T> EnhancedClientDynamoDBTransaction addPutItem(MappedTableResource<T> mappedTableResource, T item) {
+    public <T> DynamoDBEnhancedClientTransaction addPutItem(MappedTableResource<T> mappedTableResource, T item) {
         builder.addPutItem(mappedTableResource, item);
         hasTransactionItems = true;
         return this;
@@ -56,7 +56,7 @@ public class EnhancedClientDynamoDBTransaction {
      * @param item                更新するテーブルのアイテム
      * @return EnhancedClientDynamoDBTransaction
      */
-    public <T> EnhancedClientDynamoDBTransaction addUpdateItem(MappedTableResource<T> mappedTableResource, T item) {
+    public <T> DynamoDBEnhancedClientTransaction addUpdateItem(MappedTableResource<T> mappedTableResource, T item) {
         builder.addUpdateItem(mappedTableResource, item);
         hasTransactionItems = true;
         return this;
@@ -70,7 +70,7 @@ public class EnhancedClientDynamoDBTransaction {
      * @param key                 削除するキー
      * @return EnhancedClientDynamoDBTransaction
      */
-    public <T> EnhancedClientDynamoDBTransaction addDeleteItem(MappedTableResource<T> mappedTableResource, Key key) {
+    public <T> DynamoDBEnhancedClientTransaction addDeleteItem(MappedTableResource<T> mappedTableResource, Key key) {
         builder.addDeleteItem(mappedTableResource, key);
         hasTransactionItems = true;
         return this;
@@ -86,7 +86,7 @@ public class EnhancedClientDynamoDBTransaction {
     }
 
     /**
-     * 本トランザクションTransactWriteItemsの要求が登録されているかを返却します。
+     * 本トランザクションにTransactWriteItemsの要求が登録されているかを返却します。
      * 
      * @return 登録されている場合はtrue
      */

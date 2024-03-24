@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
-import com.example.fw.common.dynamodb.EnhancedClientDynamoDBTransactionManager;
+import com.example.fw.common.dynamodb.DynamoDBEnhancedClientTransactionManager;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +65,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
         TodoTableItem todoItem = todoTableItemMapper.modelToTableItem(todo);
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        EnhancedClientDynamoDBTransactionManager.getTransaction()
+        DynamoDBEnhancedClientTransactionManager.getTransaction()
             .addPutItem(todoDbTable, todoItem);        
     }
    
@@ -77,7 +77,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
         todoItem.setFinished(todo.isFinished());        
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        EnhancedClientDynamoDBTransactionManager.getTransaction()
+        DynamoDBEnhancedClientTransactionManager.getTransaction()
             .addUpdateItem(todoTable, todoItem);
         return true;
     }
@@ -88,7 +88,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
         todoTable.deleteItem(key);
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        EnhancedClientDynamoDBTransactionManager.getTransaction()
+        DynamoDBEnhancedClientTransactionManager.getTransaction()
             .addDeleteItem(todoTable, key);
     }
     

@@ -13,22 +13,22 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class EnhancedClientDynamoDBTransactionManager implements DynamoDBTransactionManager {
+public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransactionManager {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     // トランザクションをスレッドローカルで管理
-    private static final ThreadLocal<EnhancedClientDynamoDBTransaction> transactionStore = new ThreadLocal<>();   
+    private static final ThreadLocal<DynamoDBEnhancedClientTransaction> transactionStore = new ThreadLocal<>();   
     private final DynamoDbEnhancedClient enhancedClient;    
     
     @Override
     public void startTransaction() {
         appLogger.debug("トランザクション開始");
-        transactionStore.set(new EnhancedClientDynamoDBTransaction());        
+        transactionStore.set(new DynamoDBEnhancedClientTransaction());        
     }
 
     @Override
     public void commit() {
         appLogger.debug("トランザクションコミット");
-        EnhancedClientDynamoDBTransaction tx = transactionStore.get();
+        DynamoDBEnhancedClientTransaction tx = transactionStore.get();
         if (tx.hasTransactionItems()) {
             enhancedClient.transactWriteItems(tx.getTransactWriteItemsEnhancedRequest());
         } else {
@@ -52,7 +52,7 @@ public class EnhancedClientDynamoDBTransactionManager implements DynamoDBTransac
      * トランザクションオブジェクトを返却する
      * @return　トランザクションオブジェクト
      */
-    public static EnhancedClientDynamoDBTransaction getTransaction() {
+    public static DynamoDBEnhancedClientTransaction getTransaction() {
         return transactionStore.get();
     }
     

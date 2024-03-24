@@ -3,9 +3,9 @@ package com.example.fw.common.dynamodb.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.example.fw.common.dynamodb.DynamoDBEnhancedClientTransactionManager;
 import com.example.fw.common.dynamodb.DynamoDBTransactionManager;
 import com.example.fw.common.dynamodb.DynamoDBTransactionManagerAspect;
-import com.example.fw.common.dynamodb.EnhancedClientDynamoDBTransactionManager;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
@@ -25,8 +25,16 @@ public class DynamoDBTransactionConfig {
      */
     @Bean
     public DynamoDBTransactionManager dynamoDBTransactionManager(DynamoDbEnhancedClient enhancedClient) {
-        return new EnhancedClientDynamoDBTransactionManager(enhancedClient);
+        return new DynamoDBEnhancedClientTransactionManager(enhancedClient);
     }
+    
+    // DynamoDBClientTransactionManagerの場合のBean定義
+    /*
+    @Bean
+    public DynamoDBTransactionManager dynamoDBTransactionManager(DynamoDbClient dynamoDbClient) {
+        return new DynamoDBClientTransactionManager(dynamoDbClient);
+    }*/
+
 
     /**
      * DynamoDBTransactionManagerAspect
