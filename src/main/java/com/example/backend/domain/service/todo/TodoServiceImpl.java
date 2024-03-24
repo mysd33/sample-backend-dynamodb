@@ -10,6 +10,7 @@ import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
+import com.example.fw.common.dynamodb.DynamoDBTransactional;
 import com.example.fw.common.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
@@ -37,8 +38,9 @@ public class TodoServiceImpl implements TodoService {
 			return new BusinessException(MessageIds.W_EX_2001);
 		});
 	}
-
+	
     @Override
+    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo create(Todo todo) {
         long unfinishedCount = todoRepository.countByFinished(false);
         if (unfinishedCount >= MAX_UNFINISHED_COUNT) {
@@ -50,6 +52,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo createForBatch(Todo todo) {
         doCreate(todo);
 
@@ -66,6 +69,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo finish(String todoId) {
         Todo todo = findOne(todoId);
         if (todo.isFinished()) {
@@ -78,6 +82,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
     public void delete(String todoId) {
         Todo todo = findOne(todoId);
         todoRepository.delete(todo);

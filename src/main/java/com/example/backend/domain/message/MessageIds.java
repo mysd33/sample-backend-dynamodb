@@ -10,6 +10,9 @@ public class MessageIds {
     public static final String W_EX_2001 = "w.ex.2001";
     public static final String W_EX_2002 = "w.ex.2002";
     public static final String W_EX_2003 = "w.ex.2003";
+    public static final String W_EX_2004 = "w.ex.2004";
+    public static final String W_EX_2005 = "w.ex.2005";
+    public static final String W_EX_2006 = "w.ex.2006";
     public static final String W_EX_5001 = "w.ex.5001";
     public static final String E_EX_9001 = "e.ex.9001";
 }

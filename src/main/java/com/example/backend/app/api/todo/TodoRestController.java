@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.service.todo.TodoService;
+import com.example.fw.common.dynamodb.DynamoDBTransactionUtil;
+import com.example.fw.common.exception.BusinessException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException;
 
 /**
  * 
@@ -48,7 +52,7 @@ public class TodoRestController {
     @ResponseStatus(HttpStatus.OK)
     public List<TodoResource> getTodos() {
         Collection<Todo> todos = todoService.findAll();
-        return todoMapper.modelsToResources(todos);        
+        return todoMapper.modelsToResources(todos);
     }
 
     /**
@@ -76,8 +80,18 @@ public class TodoRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public TodoResource postTodos(
             @Parameter(description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
-        Todo createdTodo = todoService.create(todoMapper.resourceToModel(todoResource));
-        return todoMapper.modelToResource(createdTodo);
+        try {
+            Todo createdTodo = todoService.create(todoMapper.resourceToModel(todoResource));
+            return todoMapper.modelToResource(createdTodo);
+        } catch (TransactionCanceledException e) {
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
+                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+                throw new BusinessException(e, MessageIds.W_EX_2004, todoResource.getTodoTitle());
+            }
+            throw e;
+        }
     }
 
     /**
@@ -91,8 +105,18 @@ public class TodoRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public TodoResource postTodosForBatch(
             @Parameter(description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
-        Todo createdTodo = todoService.createForBatch(todoMapper.resourceToModel(todoResource));
-        return todoMapper.modelToResource(createdTodo);
+        try {
+            Todo createdTodo = todoService.createForBatch(todoMapper.resourceToModel(todoResource));
+            return todoMapper.modelToResource(createdTodo);
+        } catch (TransactionCanceledException e) {
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
+                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+                throw new BusinessException(e, MessageIds.W_EX_2004, todoResource.getTodoTitle());
+            }
+            throw e;
+        }
     }
 
     /**
@@ -105,8 +129,18 @@ public class TodoRestController {
     @PutMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
     public TodoResource putTodo(@Parameter(description = "Todo ID") @PathVariable("todoId") String todoId) {
-        Todo finishedTodo = todoService.finish(todoId);
-        return todoMapper.modelToResource(finishedTodo);
+        try {
+            Todo finishedTodo = todoService.finish(todoId);
+            return todoMapper.modelToResource(finishedTodo);
+        } catch (TransactionCanceledException e) {
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
+                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+                throw new BusinessException(e, MessageIds.W_EX_2005, todoId);
+            }
+            throw e;
+        }
     }
 
     /**
@@ -118,6 +152,16 @@ public class TodoRestController {
     @DeleteMapping("{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTodo(@Parameter(description = "Todo ID") @PathVariable("todoId") String todoId) {
-        todoService.delete(todoId);
+        try {
+            todoService.delete(todoId);
+        } catch (TransactionCanceledException e) {
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
+                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+                throw new BusinessException(e, MessageIds.W_EX_2006, todoId);
+            }
+            throw e;
+        }
     }
 }
