@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.ConsumedCapacity;
 import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
+import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem;
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsResponse;
 
 /**
@@ -20,14 +21,14 @@ import software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsResponse
 public class DynamoDBClientTransactionManager implements DynamoDBTransactionManager {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     // トランザクションをスレッドローカルで管理
-    private static final ThreadLocal<DynamoDBClientTransaction> transactionStore = new ThreadLocal<>();    
+    private static final ThreadLocal<DynamoDBClientTransaction> transactionStore = new ThreadLocal<>();
     private final DynamoDbClient dynamoDbClient;
 
     @Override
     public void startTransaction() {
         appLogger.debug("トランザクション開始");
         transactionStore.set(new DynamoDBClientTransaction());
-        
+
     }
 
     @Override
@@ -43,28 +44,40 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
                 }
             });
             for (ConsumedCapacity capacity : response.consumedCapacity()) {
-                appLogger.debug("TransactWriteItems[{}]消費キャパシティユニット:{}", capacity.tableName(), capacity.capacityUnits());
-            }                           
-        }        
+                appLogger.debug("TransactWriteItems[{}]消費キャパシティユニット:{}", capacity.tableName(),
+                        capacity.capacityUnits());
+            }
+        }
     }
 
     @Override
     public void rollback() {
         appLogger.debug("トランザクションロールバック");
-        // 何もしない        
+        // 何もしない
     }
 
     @Override
     public void endTransaction() {
         appLogger.debug("トランザクション終了");
-        transactionStore.remove();        
+        transactionStore.remove();
     }
 
     /**
      * トランザクションオブジェクトを返却する
-     * @return　トランザクションオブジェクト
+     * 
+     * @return トランザクションオブジェクト
      */
     public static DynamoDBClientTransaction getTransaction() {
         return transactionStore.get();
+    }
+
+    /**
+     * TransactWriteItemを現在のトランザクションに追加します。
+     * 
+     * @param transactWriteItem
+     * @return 現在のトランザクションDynamoDBClientTransaction
+     */
+    public DynamoDBClientTransaction addTransactWriteItem(TransactWriteItem transactWriteItem) {
+        return getTransaction().addTransactWriteItem(transactWriteItem);
     }
 }

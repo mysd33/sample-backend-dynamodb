@@ -39,11 +39,11 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     @Value("${aws.dynamodb.todo-tablename:Todo}")
     private String todoTableName;
     private DynamoDbTable<TodoTableItem> todoTable;
-    
+
     @PostConstruct
     private void init() {
-        todoTable = createTodoTable(); 
-    }   
+        todoTable = createTodoTable();
+    }
 
     @Override
     public Optional<Todo> findById(String todoId) {
@@ -58,27 +58,25 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
         Iterable<TodoTableItem> items = todoTable.scan().items();
         return todoTableItemMapper.tableItemsToModels(items);
     }
-   
+
     @Override
     public void create(Todo todo) {
         DynamoDbTable<TodoTableItem> todoDbTable = createTodoTable();
         TodoTableItem todoItem = todoTableItemMapper.modelToTableItem(todo);
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        DynamoDBEnhancedClientTransactionManager.getTransaction()
-            .addPutItem(todoDbTable, todoItem);        
+        DynamoDBEnhancedClientTransactionManager.addPutItem(todoDbTable, todoItem);
     }
-   
+
     @Override
     public boolean update(Todo todo) {
         Key key = Key.builder().partitionValue(todo.getTodoId()).build();
         TodoTableItem todoItem = todoTable.getItem(r -> r.key(key));
         todoItem.setTodoTitle(todo.getTodoTitle());
-        todoItem.setFinished(todo.isFinished());        
+        todoItem.setFinished(todo.isFinished());
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        DynamoDBEnhancedClientTransactionManager.getTransaction()
-            .addUpdateItem(todoTable, todoItem);
+        DynamoDBEnhancedClientTransactionManager.addUpdateItem(todoTable, todoItem);
         return true;
     }
 
@@ -88,10 +86,9 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
         todoTable.deleteItem(key);
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
-        DynamoDBEnhancedClientTransactionManager.getTransaction()
-            .addDeleteItem(todoTable, key);
+        DynamoDBEnhancedClientTransactionManager.addDeleteItem(todoTable, key);
     }
-    
+
     @Override
     public long countByFinished(boolean finished) {
         AttributeValue att = AttributeValue.builder().bool(finished).build();
@@ -103,8 +100,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     }
 
     private DynamoDbTable<TodoTableItem> createTodoTable() {
-        return enhancedClient.table(todoTableName,
-                TableSchema.fromBean(TodoTableItem.class));        
+        return enhancedClient.table(todoTableName, TableSchema.fromBean(TodoTableItem.class));
     }
 
 }
