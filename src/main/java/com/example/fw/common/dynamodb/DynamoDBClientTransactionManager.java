@@ -32,10 +32,10 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
     }
 
     @Override
-    public void commit() {
-        appLogger.debug("トランザクションコミット");
+    public void commit() {        
         DynamoDBClientTransaction tx = transactionStore.get();
         if (tx.hasTransactionItems()) {
+            appLogger.debug("トランザクションコミット");
             TransactWriteItemsResponse response = dynamoDbClient.transactWriteItems(r -> {
                 r.transactItems(tx.getTransactWriteItems());
                 if (appLogger.isDebugEnabled()) {
@@ -47,6 +47,8 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
                 appLogger.debug("TransactWriteItems[{}]消費キャパシティユニット:{}", capacity.tableName(),
                         capacity.capacityUnits());
             }
+        } else {
+            appLogger.debug("トランザクションアイテムなし");
         }
     }
 

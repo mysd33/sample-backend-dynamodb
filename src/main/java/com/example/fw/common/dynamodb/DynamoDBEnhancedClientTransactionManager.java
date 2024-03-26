@@ -30,9 +30,9 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
 
     @Override
     public void commit() {
-        appLogger.debug("トランザクションコミット");
         DynamoDBEnhancedClientTransaction tx = transactionStore.get();
         if (tx.hasTransactionItems()) {
+            appLogger.debug("トランザクションコミット");
             enhancedClient.transactWriteItems(tx.getTransactWriteItemsEnhancedRequest());
         } else {
             appLogger.debug("トランザクションアイテムなし");
