@@ -14,22 +14,23 @@ import lombok.RequiredArgsConstructor;
  */
 @Aspect
 @RequiredArgsConstructor
-public class DynamoDBTransactionManagerAspect {        
+public class DynamoDBTransactionManagerAspect {
     private final DynamoDBTransactionManager transactionManager;
-        
+
     /**
      * トランザクションの開始・終了を実施します。
+     * 
      * @param jp
      * @return
      * @throws Throwable
      */
-    @Around("@annotation(com.example.fw.common.dynamodb.DynamoDBTransactional)")    
+    @Around("@annotation(com.example.fw.common.dynamodb.DynamoDBTransactional)")
     public Object aroundExecuteTransaction(final ProceedingJoinPoint jp) throws Throwable {
-        try {
+        try (transactionManager) {
             // トランザクション開始
             transactionManager.startTransaction();
             // ビジネスロジック実行
-            Object result = jp.proceed();            
+            Object result = jp.proceed();
             // トランザクションコミット
             transactionManager.commit();
             return result;
@@ -37,9 +38,6 @@ public class DynamoDBTransactionManagerAspect {
             // トランザクションロールバック
             transactionManager.rollback();
             throw e;
-        } finally {
-            // トランザクション終了
-            transactionManager.endTransaction();
         }
     }
 }

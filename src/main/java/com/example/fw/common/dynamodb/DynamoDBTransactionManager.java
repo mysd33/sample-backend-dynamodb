@@ -5,7 +5,7 @@ package com.example.fw.common.dynamodb;
  * DynamoDBのトランザクション管理機能を表すインタフェース
  *
  */
-public interface DynamoDBTransactionManager {
+public interface DynamoDBTransactionManager extends AutoCloseable {
     /**
      * トランザクションを開始します。
      */
@@ -21,8 +21,4 @@ public interface DynamoDBTransactionManager {
      */
     void rollback();
 
-    /**
-     * トランザクションを終了します。
-     */
-    void endTransaction();
 }

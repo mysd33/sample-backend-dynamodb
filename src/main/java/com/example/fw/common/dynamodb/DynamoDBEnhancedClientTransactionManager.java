@@ -46,7 +46,11 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
     }
 
     @Override
-    public void endTransaction() {
+    public void close() throws Exception {
+        endTransaction();
+    }
+
+    private void endTransaction() {
         appLogger.debug("トランザクション終了");
         transactionStore.remove();
     }
