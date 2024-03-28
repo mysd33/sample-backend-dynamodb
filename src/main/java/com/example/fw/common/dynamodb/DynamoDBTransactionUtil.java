@@ -18,7 +18,7 @@ public final class DynamoDBTransactionUtil {
      * @param e TransactionCanceledException
      * @return トランザクション実行中にConditionCheckに失敗した場合はtrueを返す
      */
-    public static boolean isTransactionConditionalCheckFailed(TransactionCanceledException e) {
+    public static boolean isTransactionConditionalCheckFailed(final TransactionCanceledException e) {
         return containsOnlyTargetCancellationReason(e, "ConditionalCheckFailed");
     }
 
@@ -29,7 +29,7 @@ public final class DynamoDBTransactionUtil {
      * @param e TransactionCanceledException
      * @return トランザクション実行中にトランザクションの競合が発生し失敗した場合はtrueを返す。
      */
-    public static boolean isTransactionConflict(TransactionCanceledException e) {
+    public static boolean isTransactionConflict(final TransactionCanceledException e) {
         return containsOnlyTargetCancellationReason(e, "TransactionConflict");
     }
 
@@ -40,8 +40,8 @@ public final class DynamoDBTransactionUtil {
      * @param targetReasonCode 指定した原因コード
      * @return 指定された原因コードのみが含まれていればtrueを返す
      */
-    private static boolean containsOnlyTargetCancellationReason(TransactionCanceledException e,
-            String targetReasonCode) {
+    private static boolean containsOnlyTargetCancellationReason(final TransactionCanceledException e,
+            final String targetReasonCode) {
         // トランザクションのキャンセルの原因については以下のドキュメントを参照
         // https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/APIReference/API_TransactWriteItems.html
         boolean contains = false;

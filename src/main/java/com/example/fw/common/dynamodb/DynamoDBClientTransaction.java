@@ -16,23 +16,25 @@ public class DynamoDBClientTransaction {
      * 本トランザクションTransactWriteItemsの要求が登録されているかを返却します。
      * 
      * @return 登録されている場合はtrue
-     */    
+     */
     public boolean hasTransactionItems() {
         return !transactWriteItems.isEmpty();
     }
 
     /**
      * TransactWriteItemをトランザクションに追加します。
+     * 
      * @param transactWriteItem
      * @return DynamoDBClientTransaction
      */
-    public DynamoDBClientTransaction addTransactWriteItem(TransactWriteItem transactWriteItem) {
+    public DynamoDBClientTransaction addTransactWriteItem(final TransactWriteItem transactWriteItem) {
         transactWriteItems.add(transactWriteItem);
         return this;
     }
 
     /**
      * TransactWriteItemsを返却します。
+     * 
      * @return TransactWriteItems
      */
     public Collection<TransactWriteItem> getTransactWriteItems() {

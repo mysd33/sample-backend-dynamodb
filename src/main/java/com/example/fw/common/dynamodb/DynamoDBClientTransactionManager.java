@@ -32,7 +32,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
     }
 
     @Override
-    public void commit() {        
+    public void commit() {
         DynamoDBClientTransaction tx = transactionStore.get();
         if (tx.hasTransactionItems()) {
             appLogger.debug("トランザクションコミット");
@@ -83,7 +83,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
      * @param transactWriteItem
      * @return 現在のトランザクションDynamoDBClientTransaction
      */
-    public DynamoDBClientTransaction addTransactWriteItem(TransactWriteItem transactWriteItem) {
+    public DynamoDBClientTransaction addTransactWriteItem(final TransactWriteItem transactWriteItem) {
         return getTransaction().addTransactWriteItem(transactWriteItem);
     }
 }
