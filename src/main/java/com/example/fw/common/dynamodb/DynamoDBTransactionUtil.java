@@ -42,6 +42,9 @@ public final class DynamoDBTransactionUtil {
      */
     private static boolean containsOnlyTargetCancellationReason(final TransactionCanceledException e,
             final String targetReasonCode) {
+        if (e == null || targetReasonCode == null || targetReasonCode.isBlank()) {
+            return false;
+        }
         // トランザクションのキャンセルの原因については以下のドキュメントを参照
         // https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/APIReference/API_TransactWriteItems.html
         boolean contains = false;
