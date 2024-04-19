@@ -14,21 +14,33 @@ public class CompositeDynamoDBTransactionManager implements DynamoDBTransactionM
     
     @Override
     public void startTransaction() {    
+    	if (transactionManagers == null) {
+    		return;
+    	}
         transactionManagers.forEach(tx -> tx.startTransaction());
     }
 
     @Override
     public void commit() {
-        transactionManagers.forEach(tx -> tx.commit());
+    	if (transactionManagers == null) {
+    		return;
+    	}
+    	transactionManagers.forEach(tx -> tx.commit());
     }
 
     @Override
     public void rollback() {
+    	if (transactionManagers == null) {
+    		return;
+    	}
         transactionManagers.forEach(tx -> tx.rollback());
     }
     
     @Override
     public void close() throws Exception {
+    	if (transactionManagers == null) {
+    		return;
+    	}    	
         for (DynamoDBTransactionManager transactionManager : transactionManagers) {
             transactionManager.close();
         }
