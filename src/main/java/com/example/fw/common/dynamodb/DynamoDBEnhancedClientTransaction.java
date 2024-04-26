@@ -31,6 +31,7 @@ public class DynamoDBEnhancedClientTransaction {
     public <T> DynamoDBEnhancedClientTransaction addConditionCheck(final MappedTableResource<T> mappedTableResource,
             final ConditionCheck<T> conditionCheck) {
         builder.addConditionCheck(mappedTableResource, conditionCheck);
+        hasTransactionItems = true;
         return this;
     }
 
