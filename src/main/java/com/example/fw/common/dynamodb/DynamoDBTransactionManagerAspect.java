@@ -34,7 +34,7 @@ public class DynamoDBTransactionManagerAspect {
             // トランザクションコミット
             transactionManager.commit();
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // トランザクションロールバック
             transactionManager.rollback();
             throw e;
