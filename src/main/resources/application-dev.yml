@@ -17,6 +17,7 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
     com.example: DEBUG
+    com.example.fw.web.aspect.LogAspect: TRACE  		
 #    software.amazon.awssdk: DEBUG
     
 aws:
