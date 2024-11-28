@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
  * TodoRepositoryのDynamoDB（トランザクション管理利用版）アクセス実装
  */
 @XRayEnabled
-//@Repository
+@Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     // （参考）DynamoDbEnhancedClientの実装例

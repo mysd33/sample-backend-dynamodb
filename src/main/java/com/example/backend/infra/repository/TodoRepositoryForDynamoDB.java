@@ -33,7 +33,7 @@ import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
  */
 @Slf4j
 @XRayEnabled
-@Repository
+//@Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDB implements TodoRepository {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);

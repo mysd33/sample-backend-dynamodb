@@ -26,7 +26,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 
 	@Override
 	public void startTransaction() {
-		appLogger.debug("トランザクション開始");
+		appLogger.debug("DynamoDBClientトランザクション開始");
 		transactionStore.set(new DynamoDBClientTransaction());
 
 	}
@@ -35,7 +35,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 	public void commit() {
 		DynamoDBClientTransaction tx = transactionStore.get();
 		if (tx.hasTransactionItems()) {
-			appLogger.debug("トランザクションコミット");
+			appLogger.debug("DynamoDBClientトランザクションコミット");
 			TransactWriteItemsResponse response = dynamoDbClient.transactWriteItems(r -> {
 				r.transactItems(tx.getTransactWriteItems());
 				if (appLogger.isDebugEnabled()) {
@@ -47,17 +47,17 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 				return;
 			}
 			for (ConsumedCapacity capacity : response.consumedCapacity()) {
-				appLogger.debug("TransactWriteItems[{}]消費キャパシティユニット:{}", capacity.tableName(),
+				appLogger.debug("DynamoDBClient TransactWriteItems[{}]消費キャパシティユニット:{}", capacity.tableName(),
 						capacity.capacityUnits());
 			}
 		} else {
-			appLogger.debug("トランザクションアイテムなし");
+			appLogger.debug("DynamoDBClientトランザクションアイテムなし");
 		}
 	}
 
 	@Override
 	public void rollback() {
-		appLogger.debug("トランザクションロールバック");
+		appLogger.debug("DynamoDBClientトランザクションロールバック");
 		// 何もしない
 	}
 
@@ -67,7 +67,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 	}
 
 	private void endTransaction() {
-		appLogger.debug("トランザクション終了");
+		appLogger.debug("DynamoDBClientトランザクション終了");
 		transactionStore.remove();
 	}
 

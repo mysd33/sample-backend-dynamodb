@@ -24,7 +24,7 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
 
     @Override
     public void startTransaction() {
-        appLogger.debug("トランザクション開始");
+        appLogger.debug("DynamoDBEnhancedClientトランザクション開始");
         transactionStore.set(new DynamoDBEnhancedClientTransaction());
     }
 
@@ -32,16 +32,16 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
     public void commit() {
         DynamoDBEnhancedClientTransaction tx = transactionStore.get();
         if (tx.hasTransactionItems()) {
-            appLogger.debug("トランザクションコミット");
+            appLogger.debug("DynamoDBEnhancedClientトランザクションコミット");
             enhancedClient.transactWriteItems(tx.getTransactWriteItemsEnhancedRequest());
         } else {
-            appLogger.debug("トランザクションアイテムなし");
+            appLogger.debug("DynamoDBEnhancedClientトランザクションアイテムなし");
         }
     }
 
     @Override
     public void rollback() {
-        appLogger.debug("トランザクションロールバック");
+        appLogger.debug("DynamoDBEnhancedClientトランザクションロールバック");
         // 何もしない
     }
 
@@ -51,7 +51,7 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
     }
 
     private void endTransaction() {
-        appLogger.debug("トランザクション終了");
+        appLogger.debug("DynamoDBEnhancedClientトランザクション終了");
         transactionStore.remove();
     }
 
