@@ -26,3 +26,8 @@ aws:
     
   xray:
     tracing-filter-name: sample-backend-dynamodb
+
+# Tomcat Access Log
+#logback:
+#  access:
+#    enabled: false    
