@@ -2,7 +2,6 @@ package com.example.fw.common.dynamodb.config;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +12,7 @@ import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
@@ -25,20 +25,19 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  *
  */
 @Configuration
+@RequiredArgsConstructor
 @Profile("dev")
 @EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
 public class DynamoDBLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
-    private static final String DUMMY = "dummy";
-
-    @Autowired
-    private DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
+    private static final String DUMMY = "dummy";    
+    private final DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
 
     /**
      * DynamoDB Local起動クラス
      */
     @Bean
-    public DynamoDBLocalExecutor dynamoDBLocalExecutor(DynamoDBTableInitializer dynamoDBTableInitializer) {
+    DynamoDBLocalExecutor dynamoDBLocalExecutor(DynamoDBTableInitializer dynamoDBTableInitializer) {
         return new DynamoDBLocalExecutor(dynamoDBConfigurationProperties.getDynamodblocal().getPort(),
                 dynamoDBTableInitializer);
     }
@@ -48,7 +47,7 @@ public class DynamoDBLocalConfig {
      */
     @Profile("!xray")
     @Bean
-    public DynamoDbClient dynamoDbClientWithoutXRay() {
+    DynamoDbClient dynamoDbClientWithoutXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);
         // @formatter:off        
@@ -68,7 +67,7 @@ public class DynamoDBLocalConfig {
      */
     @Profile("xray")
     @Bean
-    public DynamoDbClient dynamoDbClientWithXRay() {
+    DynamoDbClient dynamoDbClientWithXRay() {
         // ダミーのクレデンシャル
 
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);

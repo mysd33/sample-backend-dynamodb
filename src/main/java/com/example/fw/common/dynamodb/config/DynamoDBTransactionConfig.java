@@ -27,7 +27,7 @@ public class DynamoDBTransactionConfig {
      * 
      */
     @Bean
-    public DynamoDBTransactionManager dynamoDBTransactionManager(DynamoDbEnhancedClient enhancedClient,
+    DynamoDBTransactionManager dynamoDBTransactionManager(DynamoDbEnhancedClient enhancedClient,
             DynamoDbClient dynamoDbClient) {
         return new CompositeDynamoDBTransactionManager(
                 List.of(new DynamoDBEnhancedClientTransactionManager(enhancedClient),
@@ -39,7 +39,7 @@ public class DynamoDBTransactionConfig {
      * 
      */
     @Bean
-    public DynamoDBTransactionManagerAspect dynamoDBTransactionManagerAspect(
+    DynamoDBTransactionManagerAspect dynamoDBTransactionManagerAspect(
             DynamoDBTransactionManager transactionManager) {
         return new DynamoDBTransactionManagerAspect(transactionManager);
     }
