@@ -21,14 +21,14 @@ public class InfraConfig {
 
 
     @Bean
-    public DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
+    DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
             DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return new SampleBackendDynamoDBTableInitializer(dynamoDbClient, dynamoDbEnhancedClient);
     }
     
     // DBアクセスしない場合のスタブ
     // @Bean
-//    public TodoRepository todoRepositoryStub() {
+//    TodoRepository todoRepositoryStub() {
 //        return new TodoRepositoryStub();
 //    }
 
