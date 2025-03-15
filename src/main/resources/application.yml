@@ -19,7 +19,13 @@ spring:
 # Virtual Thread                  
   threads:
     virtual:
-      enabled: true   
+      enabled: true
+# Spring Cloud for AWS Parameter Store Integration
+  config:
+    import: 
+    - optional:aws-parameterstore=/config/common
+    - optional:aws-parameterstore=/config/sample-backend
+
 aws:
   dynamodb:
     todo-tablename: Todo
