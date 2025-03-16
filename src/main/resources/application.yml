@@ -23,8 +23,7 @@ spring:
 # Spring Cloud for AWS Parameter Store Integration
   config:
     import: 
-    - optional:aws-parameterstore=/config/common
-    - optional:aws-parameterstore=/config/sample-backend
+    - optional:aws-parameterstore:/config/common;/config/sample-backend
 
 aws:
   dynamodb:
