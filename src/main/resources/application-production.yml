@@ -1,3 +1,9 @@
+server:
+  tomcat:
+# Tomcat metrics enabled for Spring Cloud for AWS Micrometer CloudWatch Integration    
+    mbeanregistry:
+      enabled: true
+
 # Spring Cloud for AWS Parameter Store & Integration Secreters Manager Integration
 spring:
   config:
@@ -9,6 +15,18 @@ management:
     web:
       discovery:
         enabled: false
+      exposure:
+         include:
+           - health
+           - metrics
+# Metrics enabled        
+  metrics:
+    enable:
+      all: false
+      system: true
+      process: true
+      disk: true
+      jvm: true
         
 logging:
   level:

@@ -21,6 +21,16 @@ spring:
     virtual:
       enabled: true
 
+# Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
+# Default Disabled For Local Development
+management:
+  cloudwatch:
+    metrics:
+      export:
+        enabled: false
+        namespace: sample-backend-dynamodb
+        step: 10s
+            
 aws:
   dynamodb:
     todo-tablename: Todo

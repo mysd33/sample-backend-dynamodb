@@ -1,6 +1,11 @@
 server:
   port: 8000
-
+# Tomcat metrics enabled
+# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+#  tomcat:
+#    mbeanregistry:
+#      enabled: true
+        
 management:
   endpoints:
     web:
@@ -11,7 +16,12 @@ management:
       enabled: true
     java:
       enabled: true            
-                   
+# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+#  cloudwatch:
+#    metrics:
+#      export:
+#        enabled: true
+                         
 logging:
   level:
     org.springframework: INFO
