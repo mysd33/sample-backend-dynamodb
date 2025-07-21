@@ -4,12 +4,6 @@ server:
     mbeanregistry:
       enabled: true
 
-# Spring Cloud for AWS Parameter Store & Integration Secreters Manager Integration
-spring:
-  config:
-    import:
-      - 'optional:aws-parameterstore:/config/common/;/config/sample-backend/'
-
 management:
   endpoints:
     web:

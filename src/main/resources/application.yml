@@ -22,6 +22,11 @@ spring:
   threads:
     virtual:
       enabled: true
+# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/sample-backend/
+
 
 # Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
 # Default Disabled For Local Development
@@ -32,7 +37,7 @@ management:
         enabled: false
         namespace: sample-backend-dynamodb
         step: 10s
-            
+
 aws:
   dynamodb:
     todo-tablename: Todo
