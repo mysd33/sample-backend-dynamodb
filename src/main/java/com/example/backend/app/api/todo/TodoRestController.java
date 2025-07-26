@@ -21,7 +21,7 @@ import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.service.todo.TodoService;
 import com.example.fw.common.dynamodb.DynamoDBTransactionUtil;
-import com.example.fw.common.exception.BusinessException;
+import com.example.fw.common.exception.DynamoDBTransactionBusinessException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -89,7 +89,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
                     || DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
-                throw new BusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
             }
             throw e;
         }
@@ -114,7 +114,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
                     || DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
-                throw new BusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
             }
             throw e;
         }
@@ -138,7 +138,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
                     || DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
-                throw new BusinessException(e, MessageIds.W_EX_5005, todoId);
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5005, todoId);
             }
             throw e;
         }
@@ -160,7 +160,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
                     || DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
-                throw new BusinessException(e, MessageIds.W_EX_5006, todoId);
+            throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5006, todoId);
             }
             throw e;
         }
