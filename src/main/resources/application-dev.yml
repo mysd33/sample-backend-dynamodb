@@ -5,7 +5,8 @@ server:
 #  tomcat:
 #    mbeanregistry:
 #      enabled: true
-        
+
+# Spring Boot Actuator
 management:
   endpoints:
     web:
@@ -15,7 +16,7 @@ management:
     os:
       enabled: true
     java:
-      enabled: true            
+      enabled: true
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
 #  cloudwatch:
 #    metrics:
@@ -27,7 +28,7 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
     com.example: DEBUG
-    com.example.fw.web.aspect.LogAspect: TRACE  		
+    com.example.fw.web.aspect.LogAspect: TRACE		
 #    software.amazon.awssdk: DEBUG
     
 aws:

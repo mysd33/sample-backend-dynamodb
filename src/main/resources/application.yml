@@ -22,7 +22,16 @@ spring:
   threads:
     virtual:
       enabled: true
-
+# Spring Cloud for AWS Parameter Store Integration Integration
+# Default Disabled For Local Development
+  cloud:
+    aws:
+      parameterstore:
+        enabled: false
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
+  
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Common Configuration
 # Default Disabled For Local Development
 management:
@@ -30,15 +39,15 @@ management:
     metrics:
       export:
         enabled: false
-        namespace: sample-backend-dynamodb
+        namespace: ${spring.application.name}
         step: 10s
 
 aws:
   dynamodb:
     todo-tablename: Todo
-    
+# X-Ray SDK(not ADOT)    
   xray:
-    tracing-filter-name: sample-backend-dynamodb
+    tracing-filter-name: ${spring.application.name}
 
 # Tomcat Access Log
 #logback:

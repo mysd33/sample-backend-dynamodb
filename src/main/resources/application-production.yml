@@ -3,17 +3,19 @@ server:
 # Tomcat metrics enabled for Spring Cloud for AWS Micrometer CloudWatch Metrics Integration    
     mbeanregistry:
       enabled: true
-# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
-  config:
-    import: 
-      - optional:aws-parameterstore:/config/common/;/config/sample-backend/
-
+# Spring Cloud for AWS Parameter Store Integration Enabled
+spring:
+  cloud:
+    aws:
+      parameterstore:
+        enabled: true
+# Spring Boot Actuator
 management:
   endpoints:
     web:
       discovery:
         enabled: false
-# Metrics enabled        
+# Metrics enabled
   metrics:
     enable:
       all: false
@@ -26,11 +28,3 @@ management:
     metrics:
       export:
         enabled: true
-        
-logging:
-  level:
-    org.springframework: INFO
-    org.springframework.jdbc: INFO
-#    com.example: DEBUG
-    com.example: INFO
-#    software.amazon.awssdk: DEBUG
