@@ -1,11 +1,11 @@
 package com.example.fw.common.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
-import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
+import software.amazon.dynamodb.services.local.main.ServerRunner;
+import software.amazon.dynamodb.services.local.server.DynamoDBProxyServer;
 
 /**
  * DynamoDB Localを起動するクラス
