@@ -7,40 +7,47 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.example.backend.domain.message.CommonMessageIds;
 import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
 import com.example.fw.common.dynamodb.DynamoDBTransactional;
 import com.example.fw.common.exception.BusinessException;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TodoServiceの実装クラス
  */
+@Slf4j
 @XRayEnabled
 @Service
 @RequiredArgsConstructor
 public class TodoServiceImpl implements TodoService {
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final long MAX_UNFINISHED_COUNT = 5;
 
     private final TodoRepository todoRepository;
 
-	@Override	
-	public Collection<Todo> findAll() {
-		return todoRepository.findAll();
-	}
-
-	@Override	
-	public Todo findOne(String todoId) {		
-		return todoRepository.findById(todoId).orElseThrow(() -> {
-			// 対象Todoがない場合、業務エラー
-			return new BusinessException(MessageIds.W_EX_5001);
-		});
-	}
-	
     @Override
-    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
+    public Collection<Todo> findAll() {
+        appLogger.info(CommonMessageIds.I_CMN_0001);
+        return todoRepository.findAll();
+    }
+
+    @Override
+    public Todo findOne(String todoId) {
+        return todoRepository.findById(todoId).orElseThrow(() -> {
+            // 対象Todoがない場合、業務エラー
+            return new BusinessException(MessageIds.W_EX_5001);
+        });
+    }
+
+    @Override
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo create(Todo todo) {
         long unfinishedCount = todoRepository.countByFinished(false);
         if (unfinishedCount >= MAX_UNFINISHED_COUNT) {
@@ -52,7 +59,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo createForBatch(Todo todo) {
         doCreate(todo);
 
@@ -69,7 +76,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo finish(String todoId) {
         Todo todo = findOne(todoId);
         if (todo.isFinished()) {
@@ -82,7 +89,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    @DynamoDBTransactional  // DynamoDBトランザクション機能を使った場合に付与しておく
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public void delete(String todoId) {
         Todo todo = findOne(todoId);
         todoRepository.delete(todo);
