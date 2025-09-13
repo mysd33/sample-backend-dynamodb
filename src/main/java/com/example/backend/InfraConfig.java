@@ -3,11 +3,10 @@ package com.example.backend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 import com.example.fw.common.dynamodb.config.DynamoDBConfigPackage;
-import com.example.fw.common.logging.config.LoggingExtensionConfig;
+import com.example.fw.common.logging.config.LoggingConfigPackage;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -18,9 +17,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
  *
  */
 @Configuration
-@ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class })
-//Loggingの拡張設定を追加
-@Import({ LoggingExtensionConfig.class })
+// DynamoDBアクセスの設定、ロギング拡張設定を追加
+@ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class, LoggingConfigPackage.class })
 public class InfraConfig {
 
     @Bean
