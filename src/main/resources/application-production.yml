@@ -23,6 +23,7 @@ management:
       process: true
       disk: true
       jvm: true
+      tomcat: true
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
   cloudwatch:
     metrics:
