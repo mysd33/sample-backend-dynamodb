@@ -36,7 +36,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     private final DynamoDbEnhancedClient enhancedClient;
     private final TodoTableItemMapper todoTableItemMapper;
 
-    @Value("${aws.dynamodb.todo-tablename:Todo}")
+    @Value("${example.dynamodb.todo-tablename:Todo}")
     private String todoTableName;
     private DynamoDbTable<TodoTableItem> todoTable;
 

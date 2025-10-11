@@ -19,7 +19,7 @@ management:
     web:
       discovery:
         enabled: false
-# Metrics enabled
+# Metrics enabled        
   metrics:
     enable:
       all: false

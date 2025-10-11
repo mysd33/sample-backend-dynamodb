@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.model.Todo;
@@ -44,7 +43,7 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     private final DynamoDbEnhancedClient enhancedClient;
     private final TodoTableItemMapper todoTableItemMapper;
 
-    @Value("${aws.dynamodb.todo-tablename:Todo}")
+    @Value("${example.dynamodb.todo-tablename:Todo}")
     private String todoTableName;
 
     private DynamoDbTable<TodoTableItem> todoTable;

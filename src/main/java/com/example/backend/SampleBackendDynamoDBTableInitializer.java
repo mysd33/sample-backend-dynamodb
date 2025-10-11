@@ -31,7 +31,7 @@ public class SampleBackendDynamoDBTableInitializer implements DynamoDBTableIniti
     private final DynamoDbClient client;
     private final DynamoDbEnhancedClient enhancedClient;
 
-    @Value("${aws.dynamodb.todo-tablename:Todo}")
+    @Value("${example.dynamodb.todo-tablename:Todo}")
     private String todoTableName;
 
     @Override

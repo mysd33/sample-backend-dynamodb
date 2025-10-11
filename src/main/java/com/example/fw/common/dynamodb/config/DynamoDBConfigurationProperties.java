@@ -14,9 +14,8 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(prefix = DynamoDBConfigurationProperties.PROPERTY)
 public class DynamoDBConfigurationProperties {
-    // TODO: プロパティ名の見直しを予定
     // DynamoDBの設定を保持するプロパティのプレフィックス
-    static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "aws.dynamodb";
+    static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "dynamodb";
     // リージョン（デフォルト: ap-northeast-1）
     private String region = "ap-northeast-1";
     // ローカルDynamoDBの設定

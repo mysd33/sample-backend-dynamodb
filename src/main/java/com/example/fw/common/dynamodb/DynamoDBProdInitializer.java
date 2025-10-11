@@ -1,9 +1,6 @@
 package com.example.fw.common.dynamodb;
 
 import jakarta.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -12,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DynamoDBProdInitializer {
     private final DynamoDBTableInitializer dynamoDBTableInitializer;
-
-    @Value("${aws.dynamodb.todo-tablename:Todo}")
-    private String todoTableName;
 
     /**
      * DynamoDB Table作成
