@@ -9,6 +9,10 @@ spring:
     aws:
       parameterstore:
         enabled: true
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
+        
 # Spring Boot Actuator
 management:
   endpoints:

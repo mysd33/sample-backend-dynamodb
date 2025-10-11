@@ -28,10 +28,7 @@ spring:
     aws:
       parameterstore:
         enabled: false
-  config:
-    import: 
-      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
-  
+
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Common Configuration
 # Default Disabled For Local Development
 management:
