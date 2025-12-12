@@ -25,14 +25,13 @@ import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.exception.SystemException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies.NamingBase;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * 
@@ -76,24 +75,25 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
         // (参考)
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebServiceDetail/REST.html#resthowtouseexceptionhandlingforvalidationerror
         // なお、Resourceオブジェクトに存在しないフィールドがJSONに指定されてUnrecognizedPropertyExceptionがスローされるが
-        // JsonMappingExceptionのサブクラスであるため、JsonParseException、JsonMappingExceptionの２つをハンドリングする
+        // JsonMappingExceptionのサブクラスであるため、StreamReadException（SpringBoot3まではJsonParseException）、
+        // DatabindException（Spring Boot3まではJsonMappingException）の２つをハンドリングする
         // また、Spring Bootの場合、デフォルトでは、
         // ObjectMapperのDeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIESがfalseで作成されるため
         // UnrecognizedPropertyExceptionはスローされない
         // spring.jackson.deserialization.fail-on-unknown-properties=trueをapplication.yamlに設定することで、例外発生する。
-        if (ex.getCause() instanceof JsonParseException cause) {
+        if (ex.getCause() instanceof StreamReadException cause) {
             // JSONとして不正な構文の場合
             Object body = errorResponseCreator.createRequestParseErrorResponse(cause, request);
             return handleExceptionInternal(ex, body, headers, statusCode, request);
-        } else if (ex.getCause() instanceof JsonMappingException cause) {
+        } else if (ex.getCause() instanceof DatabindException cause) {
             // JSONからResourceオブジェクトへ変換する際に、値の型変換またはエラーが発生した場合、
             // もしくは、spring.jackson.deserialization.fail-on-unknown-properties=trueの場合に、
             // Resourceオブジェクトに存在しないフィールドがJSONに指定された場合に、エラーの原因となったフィールドを抽出
             List<InvalidFormatField> fields = new ArrayList<>();
             InvalidFormatField.ErrorType errorType = getFieldErrorType(cause);
             cause.getPath().forEach(ref -> {
-                Class<?> fromClass = ref.getFrom().getClass();
-                String jsonFieldName = ref.getFieldName();
+                Class<?> fromClass = ref.from().getClass();
+                String jsonFieldName = ref.getPropertyName();
                 String propertyDescription = getPropertyDescription(fromClass, jsonFieldName);
                 if (StringUtils.hasLength(propertyDescription)) {
                     fields.add(InvalidFormatField.builder().fieldName(jsonFieldName).description(propertyDescription)
@@ -117,7 +117,7 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
      * @param cause JsonMappingExceptionの原因例外
      * @return フィールドのエラータイプ
      */
-    private InvalidFormatField.ErrorType getFieldErrorType(JsonMappingException cause) {
+    private InvalidFormatField.ErrorType getFieldErrorType(DatabindException cause) {
         InvalidFormatField.ErrorType errorType;
         switch (cause) {
         case UnrecognizedPropertyException unrecognizedPropertyException -> //
@@ -136,17 +136,18 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
      * @return JsonPropertyDescriptionアノテーションの値
      */
     private String getPropertyDescription(Class<?> clazz, String jsonFieldName) {
-        List<Field> fields = List.of(clazz.getDeclaredFields());
-        for (Field field : fields) {
+        for (Field field : clazz.getDeclaredFields()) {
             JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
             // @JsonPropertyが付与されている場合はその値を優先して使用、
-            // 付与されていない場合はPropertyNamingStrategyで変換した値を使用する
+            // 付与されていない場合はObjectMapperからPropertyNamingStrategyで変換した値を使用する
+            // _
             String fieldName = jsonProperty != null ? jsonProperty.value()
-                    : ((NamingBase) objectMapper.getPropertyNamingStrategy()).translate(field.getName());
+                    : objectMapper.deserializationConfig().getPropertyNamingStrategy().nameForField(null, null,
+                            field.getName());
             if (!fieldName.equals(jsonFieldName)) {
                 continue;
             }
-            // フィルード名が一致する場合に、@JsonPropertyDescriptionがあればその値を返却
+            // フィールド名が一致する場合に、@JsonPropertyDescriptionがあればその値を返却
             JsonPropertyDescription jsonPropertyDescription = field.getAnnotation(JsonPropertyDescription.class);
             if (jsonPropertyDescription != null) {
                 return jsonPropertyDescription.value();
@@ -156,7 +157,6 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
             if (schema != null) {
                 return schema.description();
             }
-
             return null;
         }
         return null;

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -16,9 +16,9 @@
     <description>Spring Boot Backend Sample</description>
     <properties>
         <java.version>21</java.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
-        <spring-cloud-aws.version>3.4.0</spring-cloud-aws.version>
-        <springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
+        <spring-cloud-aws.version>4.0.0-M1</spring-cloud-aws.version>
+        <springdoc-openapi-ui.version>3.0.0</springdoc-openapi-ui.version>
         <awsxray.bom.version>2.19.0</awsxray.bom.version>
         <terasoluna.version>5.10.0.RELEASE</terasoluna.version>
         <!-- logback-access -->
@@ -35,7 +35,7 @@
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,7 +70,7 @@
         <!-- Spring Boot AOP -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
         <!-- TERASOLUNA Web (for TransactionToken Check)  LogAspect Required-->
         <dependency>

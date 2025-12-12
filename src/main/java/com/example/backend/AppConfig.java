@@ -12,7 +12,10 @@ import com.example.fw.web.advice.DefaultErrorResponseCreator;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
+//springdoc-openapiの内部io.swagger.v3.core.jacksonはJackson2を使用しているため
+//Jackson2のObjectMapperをインポートする
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -36,12 +39,12 @@ public class AppConfig {
         // オプション引数未指定の場合の例
         // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
         // MessageIds.E_EX_9001);
-        
+
         // オプション引数を指定した場合の例
         // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
         // MessageIds.E_EX_9001,
         // MessageIds.W_EX_2002);
-        
+
         // Builderパターンを使用した場合の記載例
         return DefaultErrorResponseCreator.builder().messageSource(messageSource)
                 .inputErrorMessageId(MessageIds.W_EX_2001)//
@@ -62,7 +65,10 @@ public class AppConfig {
      * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
      */
     @Bean
-    ModelResolver modelResolver(ObjectMapper objectMapper) {
+    ModelResolver modelResolver() {
+        // Jackson2のObjectMapperを使用して、スネークケースの設定を反映させる
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return new ModelResolver(objectMapper);
     }
 
