@@ -12,10 +12,10 @@ import lombok.Data;
  *
  */
 @Data
-@ConfigurationProperties(prefix = DynamoDBConfigurationProperties.PROPERTY)
+@ConfigurationProperties(prefix = DynamoDBConfigurationProperties.PROPERTY_PREFIX)
 public class DynamoDBConfigurationProperties {
     // DynamoDBの設定を保持するプロパティのプレフィックス
-    static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "dynamodb";
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "dynamodb";
     // リージョン（デフォルト: ap-northeast-1）
     private String region = "ap-northeast-1";
     // ローカルDynamoDBの設定
