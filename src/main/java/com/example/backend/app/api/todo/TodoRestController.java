@@ -22,6 +22,7 @@ import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.service.todo.TodoService;
 import com.example.fw.common.dynamodb.DynamoDBTransactionUtil;
 import com.example.fw.common.exception.DynamoDBTransactionBusinessException;
+import com.example.fw.common.exception.SystemException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,14 +86,27 @@ public class TodoRestController {
             Todo createdTodo = todoService.create(todoMapper.resourceToModel(todoResource));
             return todoMapper.modelToResource(createdTodo);
         } catch (TransactionCanceledException e) {
-            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
-            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
-                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
-                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+            // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
+                // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
                 throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+            } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // トランザクションの競合が発生した場合の処理にシステムエラーにする例
+                throw new SystemException(e, MessageIds.E_EX_9002);
             }
+            // 2つの理由コードが混在するケースでも業務エラーにする配慮する場合はこちらを使用
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスローする例
+            //@formatter:off
+            /*
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailedOrConflict(e)) {
+                
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+            }*/
+            //@formatter:on
             throw e;
         }
+
     }
 
     /**
@@ -110,12 +124,24 @@ public class TodoRestController {
             Todo createdTodo = todoService.createForBatch(todoMapper.resourceToModel(todoResource));
             return todoMapper.modelToResource(createdTodo);
         } catch (TransactionCanceledException e) {
-            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
-            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
-                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
-                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+            // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
+                // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
                 throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+            } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // トランザクションの競合が発生した場合の処理にシステムエラーにする例
+                throw new SystemException(e, MessageIds.E_EX_9002);
             }
+            // 2つの理由コードが混在するケースでも業務エラーにする配慮する場合はこちらを使用
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスローする例
+            //@formatter:off
+            /*
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailedOrConflict(e)) {
+                
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004, todoResource.getTodoTitle());
+            }*/
+            //@formatter:on
             throw e;
         }
     }
@@ -134,12 +160,23 @@ public class TodoRestController {
             Todo finishedTodo = todoService.finish(todoId);
             return todoMapper.modelToResource(finishedTodo);
         } catch (TransactionCanceledException e) {
-            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
-            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
-                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
-                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
+            // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
+                // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
                 throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5005, todoId);
+            } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // トランザクションの競合が発生した場合の処理にシステムエラーにする例
+                throw new SystemException(e, MessageIds.E_EX_9002);
             }
+            // 2つの理由コードが混在するケースでも業務エラーにする配慮する場合はこちらを使用
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスローする例
+            //@formatter:off
+            /*
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailedOrConflict(e)) {
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5005, todoId);
+            }*/
+            //@formatter:on
             throw e;
         }
     }
@@ -156,12 +193,23 @@ public class TodoRestController {
         try {
             todoService.delete(todoId);
         } catch (TransactionCanceledException e) {
-            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
-            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)
-                    || DynamoDBTransactionUtil.isTransactionConflict(e)) {
-                // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスロー
-            throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5006, todoId);
+            // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
+                // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5006, todoId);
+            } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
+                // トランザクションの競合が発生した場合の処理にシステムエラーにする例
+                throw new SystemException(e, MessageIds.E_EX_9002);
             }
+            // 2つの理由コードが混在するケースでも業務エラーにする配慮する場合はこちらを使用
+            // DynamoDBトランザクションを利用する場合は、トランザクション失敗時の例外をハンドリング
+            // 条件付き更新に失敗またはトランザクションが競合した場合は、業務エラーとしてリスローする例
+            //@formatter:off
+            /*
+            if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailedOrConflict(e)) {
+                throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5006, todoId);
+            }*/
+            //@formatter:on
             throw e;
         }
     }
