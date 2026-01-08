@@ -8,6 +8,10 @@ import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledExcepti
  *
  */
 public final class DynamoDBTransactionUtil {
+    private static final String NONE = "None";
+    private static final String TRANSACTION_CONFLICT = "TransactionConflict";
+    private static final String CONDITIONAL_CHECK_FAILED = "ConditionalCheckFailed";
+
     private DynamoDBTransactionUtil() {
     }
 
@@ -19,7 +23,7 @@ public final class DynamoDBTransactionUtil {
      * @return トランザクション実行中にConditionCheckに失敗した場合はtrueを返す
      */
     public static boolean isTransactionConditionalCheckFailed(final TransactionCanceledException e) {
-        return containsOnlyTargetCancellationReason(e, "ConditionalCheckFailed");
+        return containsOnlyTargetCancellationReason(e, CONDITIONAL_CHECK_FAILED);
     }
 
     /**
@@ -30,7 +34,27 @@ public final class DynamoDBTransactionUtil {
      * @return トランザクション実行中にトランザクションの競合が発生し失敗した場合はtrueを返す。
      */
     public static boolean isTransactionConflict(final TransactionCanceledException e) {
-        return containsOnlyTargetCancellationReason(e, "TransactionConflict");
+        return containsOnlyTargetCancellationReason(e, TRANSACTION_CONFLICT);
+    }
+
+    /**
+     * エラーの原因がトランザクション実行中にConditionCheckに失敗
+     * （TransactionCanceledExceptionが発生しConditionalCheckFailedが含まれている）か、あるいは、
+     * トランザクション実行中にトランザクションの競合が発生
+     * （TransactionCanceledExceptionが発生しTransactionConflicが含まれている）かどうかを判定します。
+     * 
+     */
+    public static boolean isTransactionConditionalCheckFailedOrConflict(final TransactionCanceledException e) {
+        boolean contains = false;
+        for (CancellationReason reason : e.cancellationReasons()) {
+            String reasonCode = reason.code();
+            if (CONDITIONAL_CHECK_FAILED.equals(reasonCode) || TRANSACTION_CONFLICT.equals(reasonCode)) {
+                contains = true;
+            } else if (!NONE.equals(reasonCode)) {
+                return false;
+            }
+        }
+        return contains;
     }
 
     /**
@@ -52,7 +76,7 @@ public final class DynamoDBTransactionUtil {
             String reasonCode = reason.code();
             if (targetReasonCode.equals(reasonCode)) {
                 contains = true;
-            } else if (!"None".equals(reasonCode)) {
+            } else if (!NONE.equals(reasonCode)) {
                 return false;
             }
         }
