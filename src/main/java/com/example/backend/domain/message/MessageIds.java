@@ -16,4 +16,5 @@ public class MessageIds {
     public static final String W_EX_5005 = "w.ex.5005";
     public static final String W_EX_5006 = "w.ex.5006";
     public static final String E_EX_9001 = "e.ex.9001";
+    public static final String E_EX_9002 = "e.ex.9002";
 }
