@@ -3,6 +3,7 @@ package com.example.backend;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
 import com.example.fw.common.dynamodb.config.DynamoDBConfigPackage;
@@ -21,6 +22,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class, LoggingConfigPackage.class })
 public class InfraConfig {
 
+    @Profile("dev")
     @Bean
     DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
             DynamoDbEnhancedClient dynamoDbEnhancedClient) {
