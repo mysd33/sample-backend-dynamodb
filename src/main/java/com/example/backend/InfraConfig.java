@@ -29,6 +29,15 @@ public class InfraConfig {
         return new SampleBackendDynamoDBTableInitializer(dynamoDbClient, dynamoDbEnhancedClient);
     }
 
+    @Profile("production")
+    @Bean
+    DynamoDBTableInitializer noOpDynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
+            DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        return () -> {
+            // 本番環境ではテーブル初期化を行わない
+        };
+    }
+
     // DBアクセスしない場合のスタブ
     // @Bean
 //    TodoRepository todoRepositoryStub() {
