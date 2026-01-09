@@ -1,5 +1,7 @@
 package com.example.fw.common.dynamodb;
 
+import java.util.Set;
+
 import software.amazon.awssdk.services.dynamodb.model.CancellationReason;
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException;
 
@@ -45,16 +47,7 @@ public final class DynamoDBTransactionUtil {
      * 
      */
     public static boolean isTransactionConditionalCheckFailedOrConflict(final TransactionCanceledException e) {
-        boolean contains = false;
-        for (CancellationReason reason : e.cancellationReasons()) {
-            String reasonCode = reason.code();
-            if (CONDITIONAL_CHECK_FAILED.equals(reasonCode) || TRANSACTION_CONFLICT.equals(reasonCode)) {
-                contains = true;
-            } else if (!NONE.equals(reasonCode)) {
-                return false;
-            }
-        }
-        return contains;
+        return containsTargetCancellationReasons(e, Set.of(CONDITIONAL_CHECK_FAILED, TRANSACTION_CONFLICT));
     }
 
     /**
@@ -66,7 +59,20 @@ public final class DynamoDBTransactionUtil {
      */
     private static boolean containsOnlyTargetCancellationReason(final TransactionCanceledException e,
             final String targetReasonCode) {
-        if (e == null || targetReasonCode == null || targetReasonCode.isBlank()) {
+        return containsTargetCancellationReasons(e, Set.of(targetReasonCode));
+    }
+
+    /**
+     * 
+     * /** TransactionCanceledExceptionに指定された原因コードのいずれが含まれているかを判定します
+     * 
+     * @param e                 TransactionCanceledException
+     * @param targetReasonCodes 指定した原因コード
+     * @return 指定された原因コードのいずれかが含まれていればtrueを返す
+     */
+    private static boolean containsTargetCancellationReasons(final TransactionCanceledException e,
+            final Set<String> targetReasonCodes) {
+        if (e == null || targetReasonCodes == null || targetReasonCodes.isEmpty()) {
             return false;
         }
         // トランザクションのキャンセルの原因については以下のドキュメントを参照
@@ -74,7 +80,7 @@ public final class DynamoDBTransactionUtil {
         boolean contains = false;
         for (CancellationReason reason : e.cancellationReasons()) {
             String reasonCode = reason.code();
-            if (targetReasonCode.equals(reasonCode)) {
+            if (targetReasonCodes.contains(reasonCode)) {
                 contains = true;
             } else if (!NONE.equals(reasonCode)) {
                 return false;
