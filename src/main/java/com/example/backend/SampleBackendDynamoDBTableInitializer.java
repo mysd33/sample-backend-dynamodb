@@ -53,7 +53,7 @@ public class SampleBackendDynamoDBTableInitializer implements DynamoDBTableIniti
         DynamoDbWaiter dbWaiter = client.waiter();
         DescribeTableRequest tableRequest = DescribeTableRequest.builder().tableName(todoTableName).build();
         WaiterResponse<DescribeTableResponse> waiterResponse = dbWaiter.waitUntilTableExists(tableRequest);
-        waiterResponse.matched().response().ifPresent(r -> appLogger.info(MessageIds.I_EX_0002, todoTableName));
+        waiterResponse.matched().response().ifPresent(_ -> appLogger.info(MessageIds.I_EX_0002, todoTableName));
 
     }
 }
