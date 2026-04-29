@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-//import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.fw.common.dynamodb.DynamoDBLocalExecutor;
 import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
@@ -30,7 +29,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @EnableConfigurationProperties(DynamoDBConfigurationProperties.class)
 public class DynamoDBLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
-    private static final String DUMMY = "dummy";    
+    private static final String DUMMY = "dummy";
     private final DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
 
     /**
@@ -43,11 +42,11 @@ public class DynamoDBLocalConfig {
     }
 
     /**
-     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースなし）
+     * DynamoDB Localに接続するDynamoDBClient
      */
     @Profile("!xray")
     @Bean
-    DynamoDbClient dynamoDbClientWithoutXRay() {
+    DynamoDbClient dynamoDbClient() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);
         // @formatter:off        
@@ -63,8 +62,11 @@ public class DynamoDBLocalConfig {
     }
 
     /**
-     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースあり）
+     * DynamoDB Localに接続するDynamoDBClient（X-Ray SDK）<br>
+     * 
+     * X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
      */
+    @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
     DynamoDbClient dynamoDbClientWithXRay() {

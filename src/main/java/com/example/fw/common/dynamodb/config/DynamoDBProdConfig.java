@@ -35,11 +35,11 @@ public class DynamoDBProdConfig {
     }
 
     /**
-     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースなし）
+     * DynamoDB Localに接続するDynamoDBClient
      */
     @Profile("!xray")
     @Bean
-    DynamoDbClient dynamoDbClientWithoutXRay() {
+    DynamoDbClient dynamoDbClient() {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()//
                 .httpClientBuilder((ApacheHttpClient.builder()))//
@@ -48,8 +48,10 @@ public class DynamoDBProdConfig {
     }
 
     /**
-     * DynamoDB Localに接続するDynamoDBClient（X-Rayトレースあり）
+     * DynamoDB Localに接続するDynamoDBClient（X-Ray SDK）<br>
+     * X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
      */
+    @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
     DynamoDbClient dynamoDbClientWithXRay() {
