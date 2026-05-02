@@ -17,7 +17,7 @@ public class CompositeDynamoDBTransactionManager implements DynamoDBTransactionM
     	if (transactionManagers == null) {
     		return;
     	}
-        transactionManagers.forEach(tx -> tx.startTransaction());
+        transactionManagers.forEach(DynamoDBTransactionManager::startTransaction);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class CompositeDynamoDBTransactionManager implements DynamoDBTransactionM
     	if (transactionManagers == null) {
     		return;
     	}
-    	transactionManagers.forEach(tx -> tx.commit());
+    	transactionManagers.forEach(DynamoDBTransactionManager::commit);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CompositeDynamoDBTransactionManager implements DynamoDBTransactionM
     	if (transactionManagers == null) {
     		return;
     	}
-        transactionManagers.forEach(tx -> tx.rollback());
+        transactionManagers.forEach(DynamoDBTransactionManager::rollback);
     }
     
     @Override

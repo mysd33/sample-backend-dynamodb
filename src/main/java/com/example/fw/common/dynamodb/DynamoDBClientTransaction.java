@@ -24,7 +24,7 @@ public class DynamoDBClientTransaction {
     /**
      * TransactWriteItemをトランザクションに追加します。
      * 
-     * @param transactWriteItem
+     * @param transactWriteItem TransactWriteItem
      * @return DynamoDBClientTransaction
      */
     public DynamoDBClientTransaction addTransactWriteItem(final TransactWriteItem transactWriteItem) {

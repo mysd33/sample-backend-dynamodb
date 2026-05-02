@@ -83,7 +83,7 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 	/**
 	 * TransactWriteItemを現在のトランザクションに追加します。
 	 * 
-	 * @param transactWriteItem
+	 * @param transactWriteItem TransactWriteItem
 	 * @return 現在のトランザクションDynamoDBClientTransaction
 	 */
 	public static DynamoDBClientTransaction addTransactWriteItem(final TransactWriteItem transactWriteItem) {
