@@ -40,10 +40,9 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public Todo findOne(String todoId) {
-        return todoRepository.findById(todoId).orElseThrow(() -> {
-            // 対象Todoがない場合、業務エラー
-            return new BusinessException(MessageIds.W_EX_5001);
-        });
+        return todoRepository.findById(todoId)
+                // 対象Todoがない場合、業務エラー
+                .orElseThrow(() -> new BusinessException(MessageIds.W_EX_5001));
     }
 
     @Override

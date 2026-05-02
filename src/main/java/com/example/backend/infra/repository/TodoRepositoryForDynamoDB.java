@@ -35,6 +35,8 @@ import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 //@Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDB implements TodoRepository {
+    private static final String CONSUMED_CAPACITY_DEBUG_MESSAGE = "消費キャパシティユニット:{}";
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     // （参考）DynamoDbEnhancedClientの実装例
@@ -71,9 +73,9 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     public void create(Todo todo) {
         TodoTableItem todoItem = todoTableItemMapper.modelToTableItem(todo);
         if (appLogger.isDebugEnabled()) {
-            PutItemEnhancedResponse<TodoTableItem> response = todoTable.putItemWithResponse(
-                    r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL).build());
-            appLogger.debug("消費キャパシティユニット:{}", response.consumedCapacity().capacityUnits());
+            PutItemEnhancedResponse<TodoTableItem> response = todoTable
+                    .putItemWithResponse(r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
 
         } else {
             todoTable.putItem(todoItem);
@@ -87,9 +89,9 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
         todoItem.setTodoTitle(todo.getTodoTitle());
         todoItem.setFinished(todo.isFinished());
         if (appLogger.isDebugEnabled()) {
-            UpdateItemEnhancedResponse<TodoTableItem> response = todoTable.updateItemWithResponse(
-                    r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL).build());
-            appLogger.debug("消費キャパシティユニット:{}", response.consumedCapacity().capacityUnits());
+            UpdateItemEnhancedResponse<TodoTableItem> response = todoTable
+                    .updateItemWithResponse(r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
         } else {
             todoTable.updateItem(todoItem);
         }
@@ -100,9 +102,9 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     public void delete(Todo todo) {
         Key key = Key.builder().partitionValue(todo.getTodoId()).build();
         if (appLogger.isDebugEnabled()) {
-            DeleteItemEnhancedResponse<TodoTableItem> response = todoTable.deleteItemWithResponse(
-                    r -> r.key(key).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL).build());
-            appLogger.debug("消費キャパシティユニット:{}", response.consumedCapacity().capacityUnits());
+            DeleteItemEnhancedResponse<TodoTableItem> response = todoTable
+                    .deleteItemWithResponse(r -> r.key(key).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
         } else {
             todoTable.deleteItem(key);
         }
