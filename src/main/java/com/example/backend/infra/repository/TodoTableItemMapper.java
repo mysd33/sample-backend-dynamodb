@@ -8,29 +8,20 @@ import org.mapstruct.MappingConstants.ComponentModel;
 
 import com.example.backend.domain.model.Todo;
 
-/**
- * TodoとTodoTableのオブジェクトマッパークラス
- *
- */
+/// TodoとTodoTableのオブジェクトマッパークラス
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface TodoTableItemMapper {
 
-    /**
-     * モデルからテーブルデータに変換
-     */
+    /// モデルからテーブルデータに変換
     TodoTableItem modelToTableItem(Todo todo);
 
-    /**
-     * リソースからモデルに変換
-     */
+    /// リソースからモデルに変換
     Todo tableItemToModel(TodoTableItem todoItem);
     
     
-    /**
-     * リソースのリストからモデルのリストに変換
-     */
+    /// リソースのリストからモデルのリストに変換
     default List<Todo> tableItemsToModels(Iterable<TodoTableItem> todoItems) {
-        List<Todo> todoList = new ArrayList<>();
+        var todoList = new ArrayList<Todo>();
         todoItems.forEach(item -> 
             todoList.add(tableItemToModel(item))
         );

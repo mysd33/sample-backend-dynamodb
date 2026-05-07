@@ -2,7 +2,6 @@ package com.example.backend.infra.repository;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-/**
- * TodoRepositoryのDynamoDB（トランザクション管理利用版）アクセス実装
- */
+/// TodoRepositoryのDynamoDB（トランザクション管理利用版）アクセス実装
 @XRayEnabled
 @Repository
 @RequiredArgsConstructor
@@ -92,7 +89,7 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     @Override
     public long countByFinished(boolean finished) {
         AttributeValue att = AttributeValue.builder().bool(finished).build();
-        Map<String, AttributeValue> expressionValues = new HashMap<>();
+        var expressionValues = new HashMap<String, AttributeValue>();
         expressionValues.put(":value", att);
         Expression expression = Expression.builder().expression("finished = :value").expressionValues(expressionValues)
                 .build();

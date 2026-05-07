@@ -30,11 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException;
 
-/**
- * 
- * Todoを扱うREST APIのRestControllerクラス
- *
- */
+/// Todoを扱うREST APIのRestControllerクラス
 @Tag(name = "Todo", description = "Todo API")
 @XRayEnabled
 @RestController
@@ -44,11 +40,9 @@ public class TodoRestController {
     private final TodoService todoService;
     private final TodoMapper todoMapper;
 
-    /**
-     * Todoリストを取得する
-     * 
-     * @return Todoリスト
-     */
+    /// Todoリストを取得する
+    ///
+    /// @return Todoリスト
     @Operation(summary = "Todoリスト取得", description = "Todoリストを取得する。")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -57,12 +51,10 @@ public class TodoRestController {
         return todoMapper.modelsToResources(todos);
     }
 
-    /**
-     * 指定したTodo IDに対応するTodoを取得する
-     * 
-     * @param todoId Todo ID
-     * @return
-     */
+    /// 指定したTodo IDに対応するTodoを取得する
+    ///
+    /// @param todoId Todo ID
+    /// @return
     @Operation(summary = "Todo取得", description = "指定したTodo IDに対応するTodoを取得する。")
     @GetMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
@@ -71,12 +63,10 @@ public class TodoRestController {
         return todoMapper.modelToResource(todo);
     }
 
-    /**
-     * Todoを登録する
-     * 
-     * @param todoResource 登録するTodo
-     * @return 登録したTodo
-     */
+    /// Todoを登録する
+    ///
+    /// @param todoResource 登録するTodo
+    /// @return 登録したTodo
     @Operation(summary = "Todo登録", description = "Todoを登録する。")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -109,12 +99,10 @@ public class TodoRestController {
 
     }
 
-    /**
-     * バッチ処理向けに登録件数をチェックせずにTodoを登録する
-     * 
-     * @param todoResource 登録するTodo
-     * @return 登録したTodo
-     */
+    /// バッチ処理向けに登録件数をチェックせずにTodoを登録する
+    ///
+    /// @param todoResource 登録するTodo
+    /// @return 登録したTodo
     @Operation(summary = "バッチ処理用Todo登録", description = "バッチ処理向けに登録件数をチェックせずにTodoを登録する。")
     @PostMapping("batch")
     @ResponseStatus(HttpStatus.CREATED)
@@ -146,12 +134,10 @@ public class TodoRestController {
         }
     }
 
-    /**
-     * 指定したTodo IDのTodoを完了状態に更新する
-     * 
-     * @param todoId Todo ID
-     * @return 更新したTodo
-     */
+    /// 指定したTodo IDのTodoを完了状態に更新する
+    ///
+    /// @param todoId Todo ID
+    /// @return 更新したTodo
     @Operation(summary = "Todo完了", description = "指定したTodo IDのTodoを完了状態に更新する。")
     @PutMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
@@ -181,11 +167,9 @@ public class TodoRestController {
         }
     }
 
-    /**
-     * 指定したTodo IDのTodoを削除する。
-     * 
-     * @param todoId Todo ID
-     */
+    /// 指定したTodo IDのTodoを削除する。
+    ///
+    /// @param todoId Todo ID
     @Operation(summary = "Todo削除", description = "指定したTodo IDのTodoを削除する。")
     @DeleteMapping("{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -4,10 +4,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * 複数のDynamoDBTransactionManagerをまとめるためのDynamoDBTransactionManagerクラス
- *
- */
+/// 複数のDynamoDBTransactionManagerをまとめるためのDynamoDBTransactionManagerクラス
 @RequiredArgsConstructor
 public class CompositeDynamoDBTransactionManager implements DynamoDBTransactionManager {
     private final List<DynamoDBTransactionManager> transactionManagers;

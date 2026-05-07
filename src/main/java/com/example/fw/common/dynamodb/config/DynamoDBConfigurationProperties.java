@@ -6,11 +6,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 
 import lombok.Data;
 
-/**
- * 
- * DynamoDBのプロパティクラス
- *
- */
+/// DynamoDBのプロパティクラス
 @Data
 @ConfigurationProperties(prefix = DynamoDBConfigurationProperties.PROPERTY_PREFIX)
 public class DynamoDBConfigurationProperties {

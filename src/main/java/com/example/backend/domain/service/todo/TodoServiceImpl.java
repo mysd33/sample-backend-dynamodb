@@ -19,9 +19,7 @@ import com.example.fw.common.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * TodoServiceの実装クラス
- */
+/// TodoServiceの実装クラス
 @Slf4j
 @XRayEnabled
 @Service
@@ -48,7 +46,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo create(Todo todo) {
-        long unfinishedCount = todoRepository.countByFinished(false);
+        var unfinishedCount = todoRepository.countByFinished(false);
         if (unfinishedCount >= MAX_UNFINISHED_COUNT) {
             // 未完了のTodoが、5件以上の場合、業務エラー
             throw new BusinessException(MessageIds.W_EX_5002, String.valueOf(MAX_UNFINISHED_COUNT));
@@ -67,7 +65,7 @@ public class TodoServiceImpl implements TodoService {
 
     private void doCreate(Todo todo) {
         String todoId = UUID.randomUUID().toString();
-        Date createdAt = new Date();
+        var createdAt = new Date();
         todo.setTodoId(todoId);
         todo.setCreatedAt(createdAt);
         todo.setFinished(false);

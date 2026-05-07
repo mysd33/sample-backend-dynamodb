@@ -11,11 +11,7 @@ import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItem;
 import software.amazon.awssdk.services.dynamodb.model.TransactWriteItemsResponse;
 
-/**
- * 
- * DynamoDbClientを利用したDynamoDBTransactionManagerの実装クラスです。
- *
- */
+/// DynamoDbClientを利用したDynamoDBTransactionManagerの実装クラスです。
 @Slf4j
 @RequiredArgsConstructor
 public class DynamoDBClientTransactionManager implements DynamoDBTransactionManager {
@@ -71,21 +67,17 @@ public class DynamoDBClientTransactionManager implements DynamoDBTransactionMana
 		transactionStore.remove();
 	}
 
-	/**
-	 * トランザクションオブジェクトを返却する
-	 * 
-	 * @return トランザクションオブジェクト
-	 */
+	/// トランザクションオブジェクトを返却する
+	///
+	/// @return トランザクションオブジェクト
 	public static DynamoDBClientTransaction getTransaction() {
 		return transactionStore.get();
 	}
 
-	/**
-	 * TransactWriteItemを現在のトランザクションに追加します。
-	 * 
-	 * @param transactWriteItem TransactWriteItem
-	 * @return 現在のトランザクションDynamoDBClientTransaction
-	 */
+	/// TransactWriteItemを現在のトランザクションに追加します。
+	///
+	/// @param transactWriteItem TransactWriteItem
+	/// @return 現在のトランザクションDynamoDBClientTransaction
 	public static DynamoDBClientTransaction addTransactWriteItem(final TransactWriteItem transactWriteItem) {
 		return getTransaction().addTransactWriteItem(transactWriteItem);
 	}

@@ -10,10 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.MappedTableResource;
 import software.amazon.awssdk.enhanced.dynamodb.model.ConditionCheck;
 
-/**
- * DynamoDbEnhancedClientを利用したDynamoDBTransactionManagerの実装クラスです。
- *
- */
+/// DynamoDbEnhancedClientを利用したDynamoDBTransactionManagerの実装クラスです。
 @Slf4j
 @RequiredArgsConstructor
 public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransactionManager {
@@ -55,62 +52,52 @@ public class DynamoDBEnhancedClientTransactionManager implements DynamoDBTransac
         transactionStore.remove();
     }
 
-    /**
-     * トランザクションオブジェクトを返却する
-     * 
-     * @return トランザクションオブジェクト
-     */
+    /// トランザクションオブジェクトを返却する
+    ///
+    /// @return トランザクションオブジェクト
     public static DynamoDBEnhancedClientTransaction getTransaction() {
         return transactionStore.get();
     }
 
-    /**
-     * ConditionCheckの操作を現在のトランザクションに追加します。
-     * 
-     * @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
-     * @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
-     * @param conditionCheck      ConditionCheck
-     * @return 現在のトランザクションEnhancedClientDynamoDBTransaction
-     */
+    /// ConditionCheckの操作を現在のトランザクションに追加します。
+    ///
+    /// @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
+    /// @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
+    /// @param conditionCheck      ConditionCheck
+    /// @return 現在のトランザクションEnhancedClientDynamoDBTransaction
     public static <T> DynamoDBEnhancedClientTransaction addConditionCheck(
             final MappedTableResource<T> mappedTableResource, final ConditionCheck<T> conditionCheck) {
         return getTransaction().addConditionCheck(mappedTableResource, conditionCheck);
     }
 
-    /**
-     * PutItemの操作を現在のトランザクションに追加します。
-     * 
-     * @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
-     * @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
-     * @param item                登録するテーブルのアイテム
-     * @return 現在のトランザクションEnhancedClientDynamoDBTransaction
-     */
+    /// PutItemの操作を現在のトランザクションに追加します。
+    ///
+    /// @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
+    /// @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
+    /// @param item                登録するテーブルのアイテム
+    /// @return 現在のトランザクションEnhancedClientDynamoDBTransaction
     public static <T> DynamoDBEnhancedClientTransaction addPutItem(final MappedTableResource<T> mappedTableResource,
             final T item) {
         return getTransaction().addPutItem(mappedTableResource, item);
     }
 
-    /**
-     * UpdateItemの操作を現在のトランザクションに追加します。
-     * 
-     * @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
-     * @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
-     * @param item                更新するテーブルのアイテム
-     * @return 現在のトランザクションEnhancedClientDynamoDBTransaction
-     */
+    /// UpdateItemの操作を現在のトランザクションに追加します。
+    ///
+    /// @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
+    /// @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
+    /// @param item                更新するテーブルのアイテム
+    /// @return 現在のトランザクションEnhancedClientDynamoDBTransaction
     public static <T> DynamoDBEnhancedClientTransaction addUpdateItem(final MappedTableResource<T> mappedTableResource,
             final T item) {
         return getTransaction().addUpdateItem(mappedTableResource, item);
     }
 
-    /**
-     * DeleteItemの操作を現在のトランザクションに追加します。
-     * 
-     * @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
-     * @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
-     * @param key                 削除するキー
-     * @return 現在のトランザクションEnhancedClientDynamoDBTransaction
-     */
+    /// DeleteItemの操作を現在のトランザクションに追加します。
+    ///
+    /// @param <T>                 DynamoDbEnhancedClient利用する場合のテーブルのアイテムを表すクラス
+    /// @param mappedTableResource DynamoDbEnhancedClient利用する場合のテーブルクラス
+    /// @param key                 削除するキー
+    /// @return 現在のトランザクションEnhancedClientDynamoDBTransaction
     public static <T> DynamoDBEnhancedClientTransaction addDeleteItem(final MappedTableResource<T> mappedTableResource,
             final Key key) {
         return getTransaction().addDeleteItem(mappedTableResource, key);

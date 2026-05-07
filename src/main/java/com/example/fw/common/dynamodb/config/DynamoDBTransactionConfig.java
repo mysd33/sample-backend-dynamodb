@@ -14,18 +14,11 @@ import com.example.fw.common.dynamodb.DynamoDBTransactionManagerAspect;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-/**
- * 
- * DynamoDBトランザクションの宣言的トランザクション管理機能の設定クラス
- *
- */
+/// DynamoDBトランザクションの宣言的トランザクション管理機能の設定クラス
 @Configuration
 public class DynamoDBTransactionConfig {
 
-    /**
-     * DynamoDBTransactionManager
-     * 
-     */
+    /// DynamoDBTransactionManager
     @Bean
     DynamoDBTransactionManager dynamoDBTransactionManager(DynamoDbEnhancedClient enhancedClient,
             DynamoDbClient dynamoDbClient) {
@@ -34,10 +27,7 @@ public class DynamoDBTransactionConfig {
                         new DynamoDBClientTransactionManager(dynamoDbClient)));
     }
 
-    /**
-     * DynamoDBTransactionManagerAspect
-     * 
-     */
+    /// DynamoDBTransactionManagerAspect
     @Bean
     DynamoDBTransactionManagerAspect dynamoDBTransactionManagerAspect(
             DynamoDBTransactionManager transactionManager) {

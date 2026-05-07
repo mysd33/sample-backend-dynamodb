@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
-/**
- * DynamoDBのTodoテーブルItemクラス
- */
+/// DynamoDBのTodoテーブルItemクラス
 @Data
 @Builder
 @NoArgsConstructor

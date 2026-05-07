@@ -15,10 +15,7 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-/**
- * DynamoDB 本番用の設定クラス
- *
- */
+/// DynamoDB 本番用の設定クラス
 @Configuration
 @RequiredArgsConstructor
 @Profile("production")
@@ -26,39 +23,33 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDBProdConfig {
     private final DynamoDBConfigurationProperties dynamoDBConfigurationProperties;
 
-    /**
-     * DynamoDB 初期テーブル作成クラス
-     */
+    /// DynamoDB 初期テーブル作成クラス
     @Bean
     DynamoDBProdInitializer dynamoDBProdIntializer(DynamoDBTableInitializer dynamoDBTableInitializer) {
         return new DynamoDBProdInitializer(dynamoDBTableInitializer);
     }
 
-    /**
-     * DynamoDB Localに接続するDynamoDBClient
-     */
+    /// DynamoDB Localに接続するDynamoDBClient
     @Profile("!xray")
     @Bean
     DynamoDbClient dynamoDbClient() {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()//
-                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .httpClientBuilder(ApacheHttpClient.builder())//
                 .region(region)//
                 .build();
     }
 
-    /**
-     * DynamoDB Localに接続するDynamoDBClient（X-Ray SDK）<br>
-     * 
-     * @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
-     */
+    /// DynamoDB Localに接続するDynamoDBClient（X-Ray SDK）<br>
+    ///
+    /// @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
     DynamoDbClient dynamoDbClientWithXRay() {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()//
-                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .httpClientBuilder(ApacheHttpClient.builder())//
                 .region(region)
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(

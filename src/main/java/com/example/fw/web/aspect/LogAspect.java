@@ -152,9 +152,9 @@ public class LogAspect {
                 // WebブラウザAPの場合、通常業務例外はControllerのメソッド内でキャッチされるが、
                 // 万が一発生した場合は、業務例外のコードと引数をログ出力する
                 case BusinessException be ->
-                    appLogger.warn(be.getCode(), logFormat, null, (Object[]) be.getArgs());
+                    appLogger.warn(be.getCode(), logFormat, null, be.getArgs());
                 case SystemException se ->
-                    appLogger.warn(se.getCode(), logFormat, null, (Object[]) se.getArgs());
+                    appLogger.warn(se.getCode(), logFormat, null, se.getArgs());
                 default -> appLogger.warn(unexpectedErrorMessageId, logFormat, null);
             }
             throw e;
@@ -227,10 +227,10 @@ public class LogAspect {
                 // WebブラウザAPのケースを考慮すると、通常業務例外はControllerのメソッド内でキャッチされ、
                 // 警告ログがでないため、ここでスタックトレース含めて出力する。
                 case BusinessException be -> //
-                    appLogger.warn(be.getCode(), logFormat, e, (Object[]) be.getArgs());
+                    appLogger.warn(be.getCode(), logFormat, e, be.getArgs());
                 // システムエラーは、ここではメソッドが異常終了した旨を警告ログのみ出力。スタックトレースは出力しない。
                 case SystemException se -> //
-                    appLogger.warn(se.getCode(), logFormat, null, (Object[]) se.getArgs());
+                    appLogger.warn(se.getCode(), logFormat, null, se.getArgs());
                 default -> appLogger.warn(unexpectedErrorMessageId, logFormat, null);
             }
             throw e;

@@ -1,9 +1,6 @@
 package com.example.fw.common.dynamodb.config;
 
-/**
- * コンポーネントスキャンするためのDynamoDBのパッケージインタフェース
- *
- */
+/// コンポーネントスキャンするためのDynamoDBのパッケージインタフェース
 public interface DynamoDBConfigPackage {
 
 }

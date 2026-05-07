@@ -12,11 +12,7 @@ import com.example.fw.common.logging.config.LoggingConfigPackage;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-/**
- * 
- * インフラストラクチャ層の設定クラス
- *
- */
+/// インフラストラクチャ層の設定クラス
 @Configuration
 // DynamoDBアクセスの設定、ロギング拡張設定を追加
 @ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class, LoggingConfigPackage.class })

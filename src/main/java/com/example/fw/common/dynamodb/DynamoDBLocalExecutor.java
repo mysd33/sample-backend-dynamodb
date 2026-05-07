@@ -7,20 +7,16 @@ import lombok.RequiredArgsConstructor;
 import software.amazon.dynamodb.services.local.main.ServerRunner;
 import software.amazon.dynamodb.services.local.server.DynamoDBProxyServer;
 
-/**
- * DynamoDB Localを起動するクラス
- */
+/// DynamoDB Localを起動するクラス
 @RequiredArgsConstructor
 public class DynamoDBLocalExecutor {
     private final int port;
     private final DynamoDBTableInitializer dynamoDBTableInitializer;
     private DynamoDBProxyServer server = null;
 
-    /**
-     * DynamoDB Local 起動
-     * 
-     * @throws Exception
-     */
+    /// DynamoDB Local 起動
+    ///
+    /// @throws Exception 例外
     @PostConstruct
     public void startup() throws Exception {
         // DynamoDB Local起動
@@ -32,11 +28,9 @@ public class DynamoDBLocalExecutor {
         dynamoDBTableInitializer.createTables();
     }
 
-    /**
-     * DynamoDB Local終了
-     * 
-     * @throws Exception
-     */
+    /// DynamoDB Local終了
+    ///
+    /// @throws Exception 例外
     @PreDestroy
     public void shutdown() throws Exception {
         if (server != null) {

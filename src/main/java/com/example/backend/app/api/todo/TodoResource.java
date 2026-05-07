@@ -13,10 +13,7 @@ import lombok.Data;
 
 //import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-/**
- * Todoリソースクラス
- *
- */
+/// Todoリソースクラス
 @Data
 public class TodoResource implements Serializable {
     @Serial
