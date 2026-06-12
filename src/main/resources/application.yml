@@ -14,7 +14,7 @@ spring:
     # Resourceオブジェクトに存在しないフィールドがJSONに指定されていた場合、エラーとする
     deserialization:
       fail-on-unknown-properties: true
-# Graceful Shutdown
+  # Graceful Shutdown
   lifecycle:
     timeout-per-shutdown-phase: 20s
   thymeleaf:
@@ -39,7 +39,14 @@ spring:
         enabled: false
       secretsmanager:
         enabled: false
-      
+
+# Spring docs default false
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
 # Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
 # Default Disabled For Local Development
 management:
@@ -52,7 +59,7 @@ management:
   tracing:
     export:
       zipkin:
-        enabled: false 
+        enabled: false
 # Mybatis
 mybatis:
   type-aliases-package: com.example.backend.domain.model
