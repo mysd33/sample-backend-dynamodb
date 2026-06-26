@@ -3,15 +3,12 @@ package com.example.backend.infra.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Value;
-
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +17,14 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 /// TodoRepositoryのDynamoDBアクセス実装
 @Slf4j
 @XRayEnabled
-//@Repository
+// @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryForDynamoDB implements TodoRepository {
     private static final String CONSUMED_CAPACITY_DEBUG_MESSAGE = "消費キャパシティユニット:{}";
@@ -58,8 +56,13 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     }
 
     @Override
-    public Collection<Todo> findAll() {
-        Iterable<TodoTableItem> items = todoTable.scan().items();
+    public Collection<Todo> findAllByUserId(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return todoTable.scan().items().stream().map(todoTableItemMapper::tableItemToModel)
+                    .toList();
+        }
+        var items = todoTable.index(TodoTableItem.TODO_USER_ID_INDEX).query(r -> r.queryConditional(
+                QueryConditional.keyEqualTo(Key.builder().partitionValue(userId).build())));
         return todoTableItemMapper.tableItemsToModels(items);
     }
 
@@ -67,9 +70,10 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     public void create(Todo todo) {
         TodoTableItem todoItem = todoTableItemMapper.modelToTableItem(todo);
         if (appLogger.isDebugEnabled()) {
-            var response = todoTable
-                    .putItemWithResponse(r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
-            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
+            var response = todoTable.putItemWithResponse(
+                    r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE,
+                    response.consumedCapacity().capacityUnits());
 
         } else {
             todoTable.putItem(todoItem);
@@ -83,9 +87,10 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
         todoItem.setTodoTitle(todo.getTodoTitle());
         todoItem.setFinished(todo.isFinished());
         if (appLogger.isDebugEnabled()) {
-            var response = todoTable
-                    .updateItemWithResponse(r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
-            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
+            var response = todoTable.updateItemWithResponse(
+                    r -> r.item(todoItem).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE,
+                    response.consumedCapacity().capacityUnits());
         } else {
             todoTable.updateItem(todoItem);
         }
@@ -93,25 +98,32 @@ public class TodoRepositoryForDynamoDB implements TodoRepository {
     }
 
     @Override
-    public void delete(Todo todo) {
+    public boolean delete(Todo todo) {
         Key key = Key.builder().partitionValue(todo.getTodoId()).build();
         if (appLogger.isDebugEnabled()) {
-            var response = todoTable
-                    .deleteItemWithResponse(r -> r.key(key).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
-            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE, response.consumedCapacity().capacityUnits());
+            var response = todoTable.deleteItemWithResponse(
+                    r -> r.key(key).returnConsumedCapacity(ReturnConsumedCapacity.TOTAL));
+            appLogger.debug(CONSUMED_CAPACITY_DEBUG_MESSAGE,
+                    response.consumedCapacity().capacityUnits());
         } else {
             todoTable.deleteItem(key);
         }
+        return true;
     }
 
     @Override
-    public long countByFinished(boolean finished) {
+    public long countByFinished(String userId, boolean finished) {
         AttributeValue att = AttributeValue.builder().bool(finished).build();
         var expressionValues = new HashMap<String, AttributeValue>();
         expressionValues.put(":value", att);
-        Expression expression = Expression.builder().expression("finished = :value").expressionValues(expressionValues)
-                .build();
-        return todoTable.scan(r -> r.filterExpression(expression)).items().stream().count();
+        Expression expression = Expression.builder().expression("finished = :value")
+                .expressionValues(expressionValues).build();
+        var items = todoTable.index(TodoTableItem.TODO_USER_ID_INDEX)
+                .query(r -> r
+                        .queryConditional(QueryConditional
+                                .keyEqualTo(Key.builder().partitionValue(userId).build()))
+                        .filterExpression(expression));
+        return todoTableItemMapper.tableItemsToModels(items).size();
     }
 
     private DynamoDbTable<TodoTableItem> createTodoTable() {

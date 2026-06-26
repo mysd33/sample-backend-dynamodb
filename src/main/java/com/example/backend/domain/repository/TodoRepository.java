@@ -2,7 +2,6 @@ package com.example.backend.domain.repository;
 
 import java.util.Collection;
 import java.util.Optional;
-
 import com.example.backend.domain.model.Todo;
 
 /// TodoのRepositoryインタフェース
@@ -13,10 +12,11 @@ public interface TodoRepository {
     /// @return Todo
     Optional<Todo> findById(String todoId);
 
-    /// Todoを全件取得する。
+    /// 指定したユーザのTodoを全件取得する。
     ///
+    /// @param userId ユーザID
     /// @return Todoの全件リスト
-    Collection<Todo> findAll();
+    Collection<Todo> findAllByUserId(String userId);
 
     /// Todoを作成する
     ///
@@ -32,11 +32,13 @@ public interface TodoRepository {
     /// Todoを削除する
     ///
     /// @param todo 削除するTodo
-    void delete(Todo todo);
+    /// @return 削除成功したかどうか
+    boolean delete(Todo todo);
 
     /// 指定した完了ステータスのTodoの件数を取得
-    ///
+    /// 
+    /// @param userId ユーザID
     /// @param finished 完了ステータス
     /// @return 件数
-    long countByFinished(boolean finished);
+    long countByFinished(String userId, boolean finished);
 }

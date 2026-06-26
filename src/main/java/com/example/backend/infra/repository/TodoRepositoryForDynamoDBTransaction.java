@@ -3,15 +3,12 @@ package com.example.backend.infra.repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.repository.TodoRepository;
 import com.example.fw.common.dynamodb.DynamoDBEnhancedClientTransactionManager;
-
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -19,6 +16,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 /// TodoRepositoryのDynamoDB（トランザクション管理利用版）アクセス実装
@@ -51,8 +49,13 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     }
 
     @Override
-    public Collection<Todo> findAll() {
-        Iterable<TodoTableItem> items = todoTable.scan().items();
+    public Collection<Todo> findAllByUserId(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return todoTable.scan().items().stream().map(todoTableItemMapper::tableItemToModel)
+                    .toList();
+        }
+        var items = todoTable.index(TodoTableItem.TODO_USER_ID_INDEX).query(r -> r.queryConditional(
+                QueryConditional.keyEqualTo(Key.builder().partitionValue(userId).build())));
         return todoTableItemMapper.tableItemsToModels(items);
     }
 
@@ -78,22 +81,28 @@ public class TodoRepositoryForDynamoDBTransaction implements TodoRepository {
     }
 
     @Override
-    public void delete(Todo todo) {
+    public boolean delete(Todo todo) {
         Key key = Key.builder().partitionValue(todo.getTodoId()).build();
         todoTable.deleteItem(key);
         // DynamoDBTransactionManagerを使ってDynamoDBTransactionに登録、この時点ではDynamoDBにアクセスしない
         // Serviceのメソッドに@DynamoDBTransactional付与することでトランザクション境界に設定され、メソッド終了時にコミットする。
         DynamoDBEnhancedClientTransactionManager.addDeleteItem(todoTable, key);
+        return true;
     }
 
     @Override
-    public long countByFinished(boolean finished) {
+    public long countByFinished(String userId, boolean finished) {
         AttributeValue att = AttributeValue.builder().bool(finished).build();
         var expressionValues = new HashMap<String, AttributeValue>();
         expressionValues.put(":value", att);
-        Expression expression = Expression.builder().expression("finished = :value").expressionValues(expressionValues)
-                .build();
-        return todoTable.scan(r -> r.filterExpression(expression)).items().stream().count();
+        Expression expression = Expression.builder().expression("finished = :value")
+                .expressionValues(expressionValues).build();
+        var items = todoTable.index(TodoTableItem.TODO_USER_ID_INDEX)
+                .query(r -> r
+                        .queryConditional(QueryConditional
+                                .keyEqualTo(Key.builder().partitionValue(userId).build()))
+                        .filterExpression(expression));
+        return todoTableItemMapper.tableItemsToModels(items).size();
     }
 
     private DynamoDbTable<TodoTableItem> createTodoTable() {

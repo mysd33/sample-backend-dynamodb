@@ -3,7 +3,6 @@ package com.example.backend.domain.service.todo;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
@@ -15,7 +14,6 @@ import com.example.fw.common.dynamodb.DynamoDBTransactional;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,22 +29,20 @@ public class TodoServiceImpl implements TodoService {
     private final TodoRepository todoRepository;
 
     @Override
-    public Collection<Todo> findAll() {
+    public Collection<Todo> findAllByUserId(String userId) {
         appLogger.info(CommonMessageIds.I_CMN_0001);
-        return todoRepository.findAll();
+        return todoRepository.findAllByUserId(userId);
     }
 
     @Override
     public Todo findOne(String todoId) {
-        return todoRepository.findById(todoId)
-                // 対象Todoがない場合、業務エラー
-                .orElseThrow(() -> new BusinessException(MessageIds.W_EX_5001));
+        return doFindOne(todoId);
     }
 
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo create(Todo todo) {
-        var unfinishedCount = todoRepository.countByFinished(false);
+        var unfinishedCount = todoRepository.countByFinished(todo.getUserId(), false);
         if (unfinishedCount >= MAX_UNFINISHED_COUNT) {
             // 未完了のTodoが、5件以上の場合、業務エラー
             throw new BusinessException(MessageIds.W_EX_5002, String.valueOf(MAX_UNFINISHED_COUNT));
@@ -59,7 +55,6 @@ public class TodoServiceImpl implements TodoService {
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo createForBatch(Todo todo) {
         doCreate(todo);
-
         return todo;
     }
 
@@ -75,7 +70,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo finish(String todoId) {
-        Todo todo = findOne(todoId);
+        Todo todo = doFindOne(todoId);
         if (todo.isFinished()) {
             // すでに終了している場合、業務エラー
             throw new BusinessException(MessageIds.W_EX_5003, todoId);
@@ -88,8 +83,14 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public void delete(String todoId) {
-        Todo todo = findOne(todoId);
+        Todo todo = doFindOne(todoId);
         todoRepository.delete(todo);
     }
 
+
+    private Todo doFindOne(String todoId) {
+        return todoRepository.findById(todoId).orElseThrow(() -> //
+        // 対象Todoがない場合、業務エラー
+        new BusinessException(MessageIds.W_EX_5001));
+    }
 }
