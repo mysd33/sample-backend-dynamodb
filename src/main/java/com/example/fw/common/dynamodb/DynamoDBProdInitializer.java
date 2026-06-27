@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 /// DynamoDB 本番向けにAP起動時初回テーブル作成するクラス
 @RequiredArgsConstructor
 public class DynamoDBProdInitializer {
+
     private final DynamoDBTableInitializer dynamoDBTableInitializer;
 
     /// DynamoDB Table作成
     ///
-    /// @throws Exception 例外
     @PostConstruct
     public void startup() {
         dynamoDBTableInitializer.createTables();

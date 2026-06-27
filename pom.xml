@@ -157,7 +157,7 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
         </dependency>
-        <!-- AWS SDK Http Client -->
+        <!-- AWS SDK Http Client (for Sync) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>apache-client</artifactId>
@@ -168,6 +168,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- AWS SDK Http Client (for DynamoDB Local) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>url-connection-client</artifactId>

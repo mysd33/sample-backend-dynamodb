@@ -1,18 +1,21 @@
-package com.example.fw.common.dynamodb.config;
+package com.example.fw.common.metrics.config;
 
 import com.example.fw.common.constants.FrameworkConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/// DynamoDBのプロパティクラス
+/// メトリクス取得機能の設定プロパティクラス。
 @Data
-@ConfigurationProperties(prefix = DynamoDBConfigurationProperties.PROPERTY_PREFIX)
-public class DynamoDBConfigurationProperties {
+@ConfigurationProperties(prefix = MetricsConfigurationProperties.PROPERTY_PREFIX)
+public class MetricsConfigurationProperties {
 
-    // DynamoDBの設定を保持するプロパティのプレフィックス
-    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "dynamodb";
-    // リージョン（デフォルト: ap-northeast-1）
-    private String region = "ap-northeast-1";
+    // メトリクス取得機能のプロパティのプレフィックス
+    static final String PROPERTY_PREFIX =
+        FrameworkConstants.PROPERTY_BASE_NAME + "management.metrics";
+
+    // MyBatisに関する設定
+    private MyBatisConfig mybatis = new MyBatisConfig();
+
     // HTTPコネクションプールの最大接続数（AWS SDKのデフォルト値50）
     // https://github.com/aws/aws-sdk-java-v2/blob/master/http-client-spi/src/main/java/software/amazon/awssdk/http/SdkHttpConfigurationOption.java#L151
     private int maxConnections = 50;
@@ -20,12 +23,14 @@ public class DynamoDBConfigurationProperties {
     // https://github.com/aws/aws-sdk-java-v2/blob/master/http-client-spi/src/main/java/software/amazon/awssdk/http/SdkHttpConfigurationOption.java#L142
     private int connectionTimeout = 2000;
 
-    // ローカルDynamoDBの設定
-    private DynamoDBLocalProperties dynamodblocal;
-
     @Data
-    public static class DynamoDBLocalProperties {
+    public static class MyBatisConfig {
 
-        private int port = 8000;
+        /// MyBatisのメトリクス観測を有効にするかどうかのフラグ
+        private boolean enable = true;
+
+        private String meterNamePrefix = "mybatis.query";
+
     }
+
 }

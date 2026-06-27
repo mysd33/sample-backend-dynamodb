@@ -1,34 +1,34 @@
 package com.example.backend;
 
+import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
+import com.example.fw.common.dynamodb.config.DynamoDBConfigPackage;
+import com.example.fw.common.logging.config.LoggingConfigPackage;
+import com.example.fw.common.metrics.config.MetricsConfigPackage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import com.example.fw.common.dynamodb.DynamoDBTableInitializer;
-import com.example.fw.common.dynamodb.config.DynamoDBConfigPackage;
-import com.example.fw.common.logging.config.LoggingConfigPackage;
-
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /// インフラストラクチャ層の設定クラス
 @Configuration
-// DynamoDBアクセスの設定、ロギング拡張設定を追加
-@ComponentScan(basePackageClasses = { DynamoDBConfigPackage.class, LoggingConfigPackage.class })
+// DynamoDBアクセスの設定、ロギング拡張機能、メトリックス転送機能の設定を追加
+@ComponentScan(basePackageClasses = {DynamoDBConfigPackage.class, LoggingConfigPackage.class,
+    MetricsConfigPackage.class})
 public class InfraConfig {
 
     @Profile("dev")
     @Bean
     DynamoDBTableInitializer dynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
-            DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return new SampleBackendDynamoDBTableInitializer(dynamoDbClient, dynamoDbEnhancedClient);
     }
 
     @Profile("production")
     @Bean
     DynamoDBTableInitializer noOpDynamoDBTableInitializer(DynamoDbClient dynamoDbClient,
-            DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return () -> {
             // 本番環境ではテーブル初期化を行わない
         };
