@@ -168,6 +168,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- AWS SDK Http Client (for Async) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
+        </dependency>
         <!-- AWS SDK Http Client (for DynamoDB Local) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
