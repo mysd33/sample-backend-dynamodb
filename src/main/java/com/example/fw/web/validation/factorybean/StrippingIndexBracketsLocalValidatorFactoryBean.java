@@ -23,7 +23,7 @@ public class StrippingIndexBracketsLocalValidatorFactoryBean extends LocalValida
         if (codes == null) {
             return original;
         }
-        var newCodesList = new ArrayList<String>(Arrays.asList(codes));
+        var newCodesList = new ArrayList<>(Arrays.asList(codes));
         // リスト（配列）のインデックス部分の正規表現
         // 例: items[0].name, items[1].name の [0], [1] 部分だけを取り除く
         for (String code : codes) {

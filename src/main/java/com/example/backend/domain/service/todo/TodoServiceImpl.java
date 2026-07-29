@@ -1,10 +1,5 @@
 package com.example.backend.domain.service.todo;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.UUID;
-import org.springframework.stereotype.Service;
-
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.backend.domain.message.CommonMessageIds;
 import com.example.backend.domain.message.MessageIds;
@@ -14,8 +9,12 @@ import com.example.fw.common.dynamodb.DynamoDBTransactional;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import java.util.Collection;
+import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /// TodoServiceの実装クラス
 @Slf4j
@@ -23,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class TodoServiceImpl implements TodoService {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final long MAX_UNFINISHED_COUNT = 5;
 
@@ -90,7 +90,7 @@ public class TodoServiceImpl implements TodoService {
 
     private Todo doFindOne(String todoId) {
         return todoRepository.findById(todoId).orElseThrow(() -> //
-        // 対象Todoがない場合、業務エラー
-        new BusinessException(MessageIds.W_EX_5001));
+            // 対象Todoがない場合、業務エラー
+            new BusinessException(MessageIds.W_EX_5001));
     }
 }

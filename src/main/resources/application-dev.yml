@@ -5,6 +5,18 @@ server:
 #  tomcat:
 #    mbeanregistry:
 #      enabled: true
+spring:
+  # Spring Security Basic Authentication
+  security:
+    user:
+      name: ${BACKEND_BASIC_AUTH_USERNAME:user}
+      password: ${BACKEND_BASIC_AUTH_PASSWORD:password}
+    # Spring Security OAuth2 Resource Server JWT Configuration
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/demo
+
 # Spring docs enabled  for local development
 springdoc:
   swagger-ui:
@@ -22,6 +34,9 @@ management:
       enabled: true
     java:
       enabled: true
+#  endpoint:
+#    env:
+#      show-values: always
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
 #  cloudwatch:
 #    metrics:
@@ -32,6 +47,8 @@ logging:
   level:
     org.springframework: INFO
     org.springframework.jdbc: INFO
+    #    org.springframework.security: TRACE
+    #    org.springframework.security.oauth2: TRACE
     com.example: DEBUG
     com.example.fw.web.aspect.LogAspect: TRACE
 #    software.amazon.awssdk: DEBUG

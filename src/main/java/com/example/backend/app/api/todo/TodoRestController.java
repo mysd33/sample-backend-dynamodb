@@ -1,7 +1,18 @@
 package com.example.backend.app.api.todo;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.example.backend.domain.message.MessageIds;
+import com.example.backend.domain.model.Todo;
+import com.example.backend.domain.service.todo.TodoService;
+import com.example.fw.common.dynamodb.DynamoDBTransactionUtil;
+import com.example.fw.common.exception.DynamoDBTransactionBusinessException;
+import com.example.fw.common.exception.SystemException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Collection;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -15,26 +26,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.example.backend.domain.message.MessageIds;
-import com.example.backend.domain.model.Todo;
-import com.example.backend.domain.service.todo.TodoService;
-import com.example.fw.common.dynamodb.DynamoDBTransactionUtil;
-import com.example.fw.common.exception.DynamoDBTransactionBusinessException;
-import com.example.fw.common.exception.SystemException;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.dynamodb.model.TransactionCanceledException;
 
 /// Todoを扱うREST APIのRestControllerクラス
 @Tag(name = "Todo", description = "Todo API")
 @XRayEnabled
 @RestController
-@RequestMapping("/api/v1/todos")
+@RequestMapping({"/api/v1/todos", "/api/v2/todos"})
 @RequiredArgsConstructor
 public class TodoRestController {
+
     private final TodoService todoService;
     private final TodoMapper todoMapper;
 
@@ -59,7 +60,7 @@ public class TodoRestController {
     @GetMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
     public TodoResource getTodo(
-            @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
+        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
         Todo todo = todoService.findOne(todoId);
         return todoMapper.modelToResource(todo);
     }
@@ -72,7 +73,7 @@ public class TodoRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TodoResource postTodos(@Parameter(
-            description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
+        description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
         try {
             Todo createdTodo = todoService.create(todoMapper.resourceToModel(todoResource));
             return todoMapper.modelToResource(createdTodo);
@@ -81,7 +82,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
                 // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
                 throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004,
-                        todoResource.getTodoTitle());
+                    todoResource.getTodoTitle());
             } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // トランザクションの競合が発生した場合の処理にシステムエラーにする例
                 throw new SystemException(e, MessageIds.E_EX_9002);
@@ -109,7 +110,7 @@ public class TodoRestController {
     @PostMapping("batch")
     @ResponseStatus(HttpStatus.CREATED)
     public TodoResource postTodosForBatch(@Parameter(
-            description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
+        description = "登録するTodo") @RequestBody @Validated TodoResource todoResource) {
         try {
             Todo createdTodo = todoService.createForBatch(todoMapper.resourceToModel(todoResource));
             return todoMapper.modelToResource(createdTodo);
@@ -118,7 +119,7 @@ public class TodoRestController {
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
                 // 条件付き更新に失敗した場合に業務エラーとしてリスローする例
                 throw new DynamoDBTransactionBusinessException(e, MessageIds.W_EX_5004,
-                        todoResource.getTodoTitle());
+                    todoResource.getTodoTitle());
             } else if (DynamoDBTransactionUtil.isTransactionConflict(e)) {
                 // トランザクションの競合が発生した場合の処理にシステムエラーにする例
                 throw new SystemException(e, MessageIds.E_EX_9002);
@@ -145,7 +146,7 @@ public class TodoRestController {
     @PutMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
     public TodoResource putTodo(
-            @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
+        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
         try {
             Todo finishedTodo = todoService.finish(todoId);
             return todoMapper.modelToResource(finishedTodo);

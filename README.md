@@ -14,7 +14,7 @@
 ## プロジェクト構成
 * sample-bff
     * 別のプロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB続化にはH2DBによる組み込みDB、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
 * sample-backend（またはsample-backend-dynamodb)
     * 本プロジェクト。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
@@ -28,9 +28,9 @@
 * sample-schedulelaunch
     * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
-        * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。        
+        * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
 
-# REST API一覧
+## REST API一覧
 * todoテーブルで管理しているデータを操作するためのREST APIを作成している
 * APIを以下に示す。
     * パス内に含まれている{todoId}は、TodoリソースのIdを示すパス変数
@@ -136,7 +136,22 @@
           "code": "w.ex.2001",
           "message": "対象のTodoがありません。"
         }        
-        ```        
+        ```
+
+## OIDC認証・認可
+> [!WARNING]
+> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring Bootに対応しつつ、ただいま実装中。  
+> 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
+
+* Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
+
+* Backendアプリケーションでは、Resource Serverとして、アクセストークンによるAPI認可を実装する。
+* BFFアプリケーションでのOIDCによるユーザ認証・認可については[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照。
+
+### Keycloak
+
+* Keycloakのインストール、設定については[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照のこと。
+
 
 ## OpenAPI
 * Springdoc-openapiにより、RestControllerの実装からAPIドキュメントをリバースエンジニアリングできる
@@ -212,6 +227,41 @@
     * デーモンのローカル実行
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon-local.html
 
+## Dockerでのアプリ起動
+* Mavenビルド
+```sh
+#Windows
+.\mvnw.cmd package
+#Linux/Mac
+./mvnw package
+```
+* ローカルでDockerビルド
+```sh
+docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest .
+```
+
+* ローカルでDocker実行（Profileを「dev」でSpringBoot実行する場合）
+```sh
+docker run -d -p 8000:8000 --name samplebackend --env SPRING_PROFILES_ACTIVE=dev,log_default XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest
+
+#logをjson形式に変更する場合
+docker run -d -p 8000:8000 --name samplebackend --env SPRING_PROFILES_ACTIVE=dev,log_container XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest
+```
+
+* ローカルでDocker実行（Profileを「production」でSpringBoot実行する場合）
+    * ※Redisのローカル起動、PostgreSQLのローカル起動も必要
+```sh
+docker run -d -p 8000:8000 --name samplebackend --env SPRING_PROFILES_ACTIVE=production,log_default --env SERVER_PORT=8000 --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest
+
+#logをjson形式に変更する場合
+docker run -d -p 8000:8000 --name samplebackend --env SPRING_PROFILES_ACTIVE=production,log_container --env SERVER_PORT=8000 --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest
+```
+
+* ECRプッシュ
+```sh
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
+docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:latest
+```
 ## ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
 * ソースコードはcom.example.fwパッケージ配下に格納されている。    
@@ -235,7 +285,7 @@
 | | 入力チェック| Java BeanValidationとSpringのValidation機能を利用し、単項目チェックや相関項目チェックといった画面の入力項目に対する形式的なチェックを実施する。 | ○ | com.example.fw.common.validation |
 | | メッセージ管理 | MessageResourceで画面やログに出力するメッセージを管理する。 | ○ | com.example.fw.common.message |
 | | 例外 | RuntimeExceptionを継承し、エラーコード（メッセージID）やメッセージを管理可能な共通的なビジネス例外、システム例外を提供する。 | ○ | com.example.fw.common.exception |
-| | ロギング | Slf4jとLogback、SpringBootのLogback拡張、ver3.4からのStructured Logs機能を利用し、プロファイルによって動作環境に応じたログレベルや出力先（ファイルや標準出力）、出力形式（タブ区切りやJSON）に切替可能とする。またメッセージIDをもとにログ出力可能な汎用的なAPIを提供する。<br/>また、logback-accessを利用しTomcatのアクセスログを出力可能とする。 | ○ | com.example.fw.common.logging<br/>com.example.fw.web.servlet |
+| | ロギング | Slf4jとLogback、SpringBootのLogback拡張の機能を利用し、プロファイルによって動作環境に応じたログレベルや出力先（ファイルや標準出力）、出力形式（タブ区切りやJSON）に切替可能とする。またメッセージIDをもとにログ出力可能な汎用的なAPIを提供する。<br/>また、logback-accessを利用しTomcatのアクセスログを出力可能とする。 | ○ | com.example.fw.common.logging<br/>com.example.fw.web.servlet |
 | | 分散トレーシング（ログ） | Micrometer Tracingを利用して、トレースIDやスパンIDをAP間でのREST API呼び出しで引継ぎ、ログにも記録することを実現する。 | - | - |
 | | 分散トレーシング（X-Ray） | X-Rayによるサービス間の分散トレーシング・可視化を実現する。2パターンの実装を提供している。<br>(1) AWS X-Ray SDKを利用する<br>(2)ADOT(AWS Distro for Open Telemetry)でAP側は未実装で自動計測する | ○ | com.example.fw.web.aspect<br>com.example.fw.servlet<br>com.example.fw.common.async<br>com.example.fw.common.dynamodb<br>com.example.fw.common.httpclient<br>com.example.fw.common.objectstorage <br> ※(1)の場合|
 | | メトリクス転送（CloudWatch） | Spring Cloud for AWSの機能により、JVM等、Spring Boot Actuatorが提供するメトリクスをCloudWatchメトリクスへ転送する。カスタムメトリクスとしてMyBatisのSQLの実行状況に対応する。 | - | - |
