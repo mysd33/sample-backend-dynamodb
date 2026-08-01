@@ -3,6 +3,7 @@ package com.example.backend;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,6 +86,7 @@ public class SecurityConfig {
     /// Spring SecurityによるOAuth2.0でのAPI認可の設定(v2 api)
     @Bean
     @Order(3)
+    @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "true", matchIfMissing = false)
     SecurityFilterChain securityFilterChainForV2Api(HttpSecurity http) {
         // v2のAPIは、OAuth2.0による認可設定を基本とする
         http.securityMatcher("/api/v2/**")
