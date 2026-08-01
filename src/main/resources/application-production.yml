@@ -3,15 +3,18 @@ server:
 # Tomcat metrics enabled for Spring Cloud for AWS Micrometer CloudWatch Metrics Integration    
     mbeanregistry:
       enabled: true
-# Spring Cloud for AWS Parameter Store Integration Enabled
+
 spring:
   security:
     user:
       name: ${example.api.backend.basic-auth.username}
       password: ${example.api.backend.basic-auth.password}
+  # Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration Enabled
   cloud:
     aws:
       parameterstore:
+        enabled: true
+      secretsmanager:
         enabled: true
   config:
     import:
