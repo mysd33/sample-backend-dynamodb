@@ -94,7 +94,8 @@ public class SecurityConfig {
             // 認可設定
             .authorizeHttpRequests(
                 authz -> authz //
-                    // TODO: Scope todoによるアクセス制御？
+                    // アクセストークンのスコープがtodoのみアクセス可能
+                    .requestMatchers("/api/v2/todos/**").hasAnyAuthority("SCOPE_todo")
                     .anyRequest().authenticated() // 認証が必要
             );
         return http.build();
