@@ -1,6 +1,7 @@
 package com.example.backend.app.api.todo;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.example.backend.app.api.common.authorization.AuthorizationUtil;
 import com.example.backend.domain.message.MessageIds;
 import com.example.backend.domain.model.Todo;
 import com.example.backend.domain.service.todo.TodoService;
@@ -13,10 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.UUID;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,10 +44,8 @@ public class TodoV2RestController {
     @Operation(summary = "Todoリスト取得", description = "Todoリストを取得する。")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TodoV2Resource> getTodos(@AuthenticationPrincipal Jwt jwt) {
-        // アクセストークンから preferred_username クレームを取得
-        String userId = getUserId(jwt);
-
+    public List<TodoV2Resource> getTodos() {
+        String userId = AuthorizationUtil.getUserId();
         var todos = todoService.findAllByUserId(userId);
         return todoMapper.modelsToV2Resources(todos);
     }
@@ -62,15 +58,10 @@ public class TodoV2RestController {
     @GetMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
     public TodoV2Resource getTodo(
-        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId,
-        @AuthenticationPrincipal Jwt jwt) {
-        var userId = getUserId(jwt);
-        var todo = todoService.findOne(todoId);
-        if (userId.equals(todo.getUserId())) {
-            return todoMapper.modelTodoV2Resource(todo);
-        }
-        // TODO: ユーザIDが一致しない場合は、nullで返却する暫定仕様とする（本来は業務エラー）
-        return null;
+        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
+        var userId = AuthorizationUtil.getUserId();
+        var todo = todoService.findOne(todoId, userId);
+        return todoMapper.modelTodoV2Resource(todo);
     }
 
     /// Todoを登録する
@@ -81,9 +72,8 @@ public class TodoV2RestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TodoV2Resource postTodos(@Parameter(
-            description = "登録するTodo") @RequestBody @Validated TodoV2Resource todoResource,
-        @AuthenticationPrincipal Jwt jwt) {
-        var userId = getUserId(jwt);
+        description = "登録するTodo") @RequestBody @Validated TodoV2Resource todoResource) {
+        var userId = AuthorizationUtil.getUserId();
         var todo = todoMapper.resourceToModel(todoResource);
         todo.setUserId(userId);
         try {
@@ -121,9 +111,8 @@ public class TodoV2RestController {
     @PostMapping("batch")
     @ResponseStatus(HttpStatus.CREATED)
     public TodoV2Resource postTodosForBatch(@Parameter(
-            description = "登録するTodo") @RequestBody @Validated TodoV2Resource todoResource,
-        @AuthenticationPrincipal Jwt jwt) {
-        var userId = getUserId(jwt);
+        description = "登録するTodo") @RequestBody @Validated TodoV2Resource todoResource) {
+        var userId = AuthorizationUtil.getUserId();
         var todo = todoMapper.resourceToModel(todoResource);
         todo.setUserId(userId);
         try {
@@ -161,17 +150,11 @@ public class TodoV2RestController {
     @PutMapping("{todoId}")
     @ResponseStatus(HttpStatus.OK)
     public TodoV2Resource putTodo(
-        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId,
-        @AuthenticationPrincipal Jwt jwt) {
-        var userId = getUserId(jwt);
-        var todo = todoService.findOne(todoId);
-        if (!userId.equals(todo.getUserId())) {
-            // TODO: ユーザIDが一致しない場合は、nullで返却する暫定仕様とする（本来は業務エラー）
-            return null;
-        }
-        // ユーザIDが一致する場合のみ完了状態に更新する
+        @Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
+        var userId = AuthorizationUtil.getUserId();
         try {
-            Todo finishedTodo = todoService.finish(todoId);
+            // ユーザIDが一致する場合のみ完了状態に更新する
+            Todo finishedTodo = todoService.finish(todoId, userId);
             return todoMapper.modelTodoV2Resource(finishedTodo);
         } catch (TransactionCanceledException e) {
             // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
@@ -201,17 +184,11 @@ public class TodoV2RestController {
     @Operation(summary = "Todo削除", description = "指定したTodo IDのTodoを削除する。")
     @DeleteMapping("{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTodo(@Parameter(description = "Todo ID") @PathVariable @UUID String todoId,
-        @AuthenticationPrincipal Jwt jwt) {
-        var userId = getUserId(jwt);
-        var todo = todoService.findOne(todoId);
-        if (!userId.equals(todo.getUserId())) {
-            // TODO: ユーザIDが一致しない場合は何もしない暫定仕様とする（本来は業務エラー）
-            return;
-        }
-        // ユーザIDが一致する場合のみ削除する
+    public void deleteTodo(@Parameter(description = "Todo ID") @PathVariable @UUID String todoId) {
+        var userId = AuthorizationUtil.getUserId();
         try {
-            todoService.delete(todoId);
+            // ユーザIDが一致する場合のみ削除する
+            todoService.delete(todoId, userId);
         } catch (TransactionCanceledException e) {
             // 理由コードごとにハンドリングしたい場合は、以下のようにキャッチしてハンドリング
             if (DynamoDBTransactionUtil.isTransactionConditionalCheckFailed(e)) {
@@ -236,10 +213,4 @@ public class TodoV2RestController {
 
     }
 
-    // TODO:ユーティリティ関数化
-    private @NonNull String getUserId(Jwt jwt) {
-        // アクセストークンから preferred_username クレームを取得
-        var userName = jwt.getClaimAsString("preferred_username");
-        return userName == null ? "" : userName;
-    }
 }

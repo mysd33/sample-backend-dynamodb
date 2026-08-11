@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 /// DynamoDBのTodoテーブルItemクラス
 @Data
@@ -15,6 +16,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecon
 @AllArgsConstructor
 @DynamoDbBean
 public class TodoTableItem {
+
     public static final String TODO_USER_ID_INDEX = "todoUserIdIndex";
     // ID（パーティションキー）
     private String todoId;
@@ -35,6 +37,7 @@ public class TodoTableItem {
         return todoId;
     }
 
+    @DynamoDbSortKey
     @DynamoDbSecondaryPartitionKey(indexNames = TODO_USER_ID_INDEX)
     public String getUserId() {
         return userId;

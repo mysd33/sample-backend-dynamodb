@@ -29,20 +29,28 @@ public class TodoServiceImpl implements TodoService {
     private final TodoRepository todoRepository;
 
     @Override
-    public Collection<Todo> findAllByUserId(String userId) {
-        appLogger.info(CommonMessageIds.I_CMN_0001);
-        return todoRepository.findAllByUserId(userId);
-    }
-
-    @Override
     public Todo findOne(String todoId) {
         return doFindOne(todoId);
     }
 
     @Override
+    public Todo findOne(String todoId, String userId) {
+        return todoRepository.findOneByUserId(todoId, userId).orElseThrow(() -> //
+            // 対象Todoがない場合、業務エラー
+            new BusinessException(MessageIds.W_EX_5001));
+    }
+
+    @Override
+    public Collection<Todo> findAllByUserId(String userId) {
+        appLogger.info(CommonMessageIds.I_CMN_0001);
+        return todoRepository.findAllByUserId(userId);
+    }
+
+
+    @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo create(Todo todo) {
-        var unfinishedCount = todoRepository.countByFinished(todo.getUserId(), false);
+        var unfinishedCount = todoRepository.countByFinishedStatus(todo.getUserId(), false);
         if (unfinishedCount >= MAX_UNFINISHED_COUNT) {
             // 未完了のTodoが、5件以上の場合、業務エラー
             throw new BusinessException(MessageIds.W_EX_5002, String.valueOf(MAX_UNFINISHED_COUNT));
@@ -58,6 +66,7 @@ public class TodoServiceImpl implements TodoService {
         return todo;
     }
 
+    /// Todoを作成する内部処理
     private void doCreate(Todo todo) {
         String todoId = UUID.randomUUID().toString();
         var createdAt = new Date();
@@ -76,7 +85,32 @@ public class TodoServiceImpl implements TodoService {
             throw new BusinessException(MessageIds.W_EX_5003, todoId);
         }
         todo.setFinished(true);
-        todoRepository.update(todo);
+        boolean result = todoRepository.update(todo);
+        if (!result) {
+            // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue
+            // （実際にDynamoDBにアクセスするのはServiceのメソッド終了時のため）なので、ここでは業務エラーは発生しない
+            throw new BusinessException(MessageIds.W_EX_5005, todoId);
+        }
+        return todo;
+    }
+
+    @Override
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
+    public Todo finish(String todoId, String userId) {
+        var todo = doFindOne(todoId);
+        if (todo.isFinished()) {
+            // すでに終了している場合、業務エラー
+            throw new BusinessException(MessageIds.W_EX_5003, todoId);
+        }
+        var result = todoRepository.updateFinishedById(todoId, userId);
+        if (!result) {
+            // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue
+            // （実際にDynamoDBにアクセスするのはServiceのメソッド終了時のため）なので、ここでは業務エラーは発生しない
+
+            // 対象のTodoのユーザIDが一致しない場合等、業務エラー
+            throw new BusinessException(MessageIds.W_EX_5005, todoId);
+        }
+        todo.setFinished(true);
         return todo;
     }
 
@@ -84,12 +118,30 @@ public class TodoServiceImpl implements TodoService {
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public void delete(String todoId) {
         Todo todo = doFindOne(todoId);
-        todoRepository.delete(todo);
+        var result = todoRepository.delete(todo);
+        if (!result) {
+            // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue
+            // （実際にDynamoDBにアクセスするのはServiceのメソッド終了時のため）なので、ここでは業務エラーは発生しない
+
+            throw new BusinessException(MessageIds.W_EX_5005, todoId);
+        }
     }
 
+    @Override
+    @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
+    public void delete(String todoId, String userId) {
+        var result = todoRepository.deleteById(todoId, userId);
+        if (!result) {
+            // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue
+            // （実際にDynamoDBにアクセスするのはServiceのメソッド終了時のため）なので、ここでは業務エラーは発生しない
+
+            // 対象のTodoのユーザIDが一致しない場合等、業務エラー
+            throw new BusinessException(MessageIds.W_EX_5006, todoId);
+        }
+    }
 
     private Todo doFindOne(String todoId) {
-        return todoRepository.findById(todoId).orElseThrow(() -> //
+        return todoRepository.findOne(todoId).orElseThrow(() -> //
             // 対象Todoがない場合、業務エラー
             new BusinessException(MessageIds.W_EX_5001));
     }
