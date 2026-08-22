@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -38,7 +37,8 @@ public class DynamoDBProdConfig {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()
             //　標準リトライ戦略
-            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD))
+            .overrideConfiguration(
+                o -> o.retryStrategy(DynamoDBRetryPolicy.dynamoDBStandardRetryStrategy()))
             .httpClientBuilder(ApacheHttpClient.builder()
                 .maxConnections(dynamoDBConfigurationProperties.getMaxConnections())
                 .connectionTimeout(
@@ -58,9 +58,10 @@ public class DynamoDBProdConfig {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()
             //　標準リトライ戦略
-            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD)
-                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-                .addExecutionInterceptor(new TracingInterceptor())
+            .overrideConfiguration(
+                o -> o.retryStrategy(DynamoDBRetryPolicy.dynamoDBStandardRetryStrategy())
+                    // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
+                    .addExecutionInterceptor(new TracingInterceptor())
             )
             .httpClientBuilder(ApacheHttpClient.builder()
                 .maxConnections(dynamoDBConfigurationProperties.getMaxConnections())

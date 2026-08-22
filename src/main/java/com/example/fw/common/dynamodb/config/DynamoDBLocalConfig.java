@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -47,7 +46,9 @@ public class DynamoDBLocalConfig {
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
         return DynamoDbClient.builder()
             //　標準リトライ戦略
-            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD))
+            .overrideConfiguration(
+                o -> o.retryStrategy(DynamoDBRetryPolicy.dynamoDBStandardRetryStrategy())
+            )
             .httpClientBuilder(ApacheHttpClient.builder()
                 .maxConnections(dynamoDBConfigurationProperties.getMaxConnections())
                 .connectionTimeout(
@@ -61,6 +62,7 @@ public class DynamoDBLocalConfig {
 
     }
 
+
     /// DynamoDB Localに接続するDynamoDBClient（X-Ray SDK）<br>
     ///
     /// @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
@@ -73,12 +75,12 @@ public class DynamoDBLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(DUMMY, DUMMY);
 
         Region region = Region.of(dynamoDBConfigurationProperties.getRegion());
-
         return DynamoDbClient.builder()
             //　標準リトライ戦略
-            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD)
-                // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
-                .addExecutionInterceptor(new TracingInterceptor())
+            .overrideConfiguration(
+                o -> o.retryStrategy(DynamoDBRetryPolicy.dynamoDBStandardRetryStrategy())
+                    // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
+                    .addExecutionInterceptor(new TracingInterceptor())
             )
             .httpClientBuilder(ApacheHttpClient.builder()
                 .maxConnections(dynamoDBConfigurationProperties.getMaxConnections())
