@@ -20,7 +20,7 @@
     * 本プロジェクト。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * [sample-batch](https://github.com/mysd33/sample-batch)
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
         * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
@@ -178,6 +178,12 @@
     * 取得したアクセストークンをV2のAPI呼び出し時にAuthorizationヘッダに付与して呼び出す。
     * 本アプリケーション（Backendアプリケーション）では、Resource Serverとして、アクセストークンによるAPI認可を実施する。
 * BFFアプリケーションでのOIDCによるユーザ認証・認可および操作方法は[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#7-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照。
+* Backendアプリケーションでも、Introspectionエンドポイントへのアクセスを行うため、以下の環境変数の設定をする。
+    * [application-oidc.yml](./src/main/resources/application-oidc.yml)
+      に規定された以下の環境変数を設定することで、KeycloakのOIDC認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+        * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-backend-oidc`）を設定
+        * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
+
 
 ## 7. プロファイル「production」でのローカル実行
 * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
@@ -335,7 +341,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-backend:lat
 | | ヘルスチェック | Spring Boot Actuatorを利用して、ヘルスチェックエンドポイントを提供する。その他、Micrometerメトリックの情報提供も行う。 | - | - |
 | | グレースフルシャットダウン | SpringBootの機能で、Webサーバ（組み込みTomcat）のグレースフルシャットダウン機能を提供する 。 | - | - |
 | | Open APIドキュメント生成 | Springdoc-openapiの機能で、RestController等の実装、アノテーション情報からOpen APIドキュメントをjson、yaml、html（Swagger-UI）形式を提供する 。 | - | - |
-| オン・バッチ共通 | DynamoDBアクセス | AWS SDK for Java 2.xのDynamoDB拡張クライアント（DynamoDbEnhancedClient)を使って、DBへのアクセス機能を提供する。 | ○ | com.example.fw.common.dynamodb |
+| オン・バッチ共通 | DynamoDBアクセス | AWS SDK for Java 2.xのDynamoDB拡張クライアント（DynamoDbEnhancedClient）を使って、DBへのアクセス機能を提供する。 | ○ | com.example.fw.common.dynamodb |
 | | DynamoDBトランザクション管理機能 | DynamoDBのトランザクション管理機能（TransactWriteItems）を利用する操作に対して、AOP機能を利用して、@DynamoDBTransactionalアノテーションによる宣言的トランザクションを実現する機能を提供する。 | ○ | com.example.fw.common.dynamodb |
 | | HTTPクライアント | WebClientやRestTemplateを利用してREST APIの呼び出しやサーバエラー時の例外の取り扱いを制御する。 | ○ | com.example.fw.common.httpclient |
 | | リトライ・サーキットブレーカ | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対する遮断やフォールバック処理等を制御する。また、WebClientのリトライ機能でエクスポネンシャルバックオフによりリトライを実現する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによりリトライ処理を提供。 | - | - |

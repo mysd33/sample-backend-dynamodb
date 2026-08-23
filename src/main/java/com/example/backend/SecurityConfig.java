@@ -96,7 +96,10 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChainForV2Api(HttpSecurity http) {
         // v2のAPIは、OAuth2.0による認可設定を基本とする
         http.securityMatcher("/api/v2/**")
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+            // アクセストークンをJWT検証する場合はコメントを外す
+            //.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+            // アクセストークンをイントロスペクションエンドポイントで検証する場合の設定（JWT検証の場合はコメントアウトする）
+            .oauth2ResourceServer(oauth2 -> oauth2.opaqueToken(Customizer.withDefaults()))
             // 認可設定
             .authorizeHttpRequests(
                 authz -> authz //
@@ -117,7 +120,7 @@ public class SecurityConfig {
             .httpBasic(Customizer.withDefaults())
             // UserDetailsServiceを明示的に設定（Spring Security 7 複数チェーン対応）
             .userDetailsService(userDetailsService)
-            // REST APIはCSRF保護不要（各フィルタチェーンは独立しているため個別に設定が必要）
+            // CSRF保護不要
             .csrf(AbstractHttpConfigurer::disable)
             // REST APIはステートレスにする（セッション不使用）
             .sessionManagement(
