@@ -1,10 +1,10 @@
 package com.example.backend.infra.repository;
 
+import com.example.backend.domain.model.Todo;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
-import com.example.backend.domain.model.Todo;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 
 /// TodoとTodoTableのオブジェクトマッパークラス

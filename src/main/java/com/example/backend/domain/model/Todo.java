@@ -1,17 +1,14 @@
 package com.example.backend.domain.model;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 
 /// Todoクラス
 @Data
 @Builder
-public class Todo implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -8221174350955399012L;
+public class Todo {
+
     // ID
     private String todoId;
     // Todoを所有するユーザID
@@ -21,5 +18,5 @@ public class Todo implements Serializable {
     // 完了したかどうか
     private boolean finished;
     // 作成日時
-    private Date createdAt;
+    private LocalDateTime createdAt;
 }

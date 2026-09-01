@@ -9,8 +9,8 @@ import com.example.fw.common.dynamodb.DynamoDBTransactional;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.systemdate.SystemDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,9 @@ public class TodoServiceImpl implements TodoService {
 
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private static final long MAX_UNFINISHED_COUNT = 5;
-
     private final TodoRepository todoRepository;
+    private final SystemDate systemDate;
+
 
     @Override
     public Todo findOne(String todoId) {
@@ -68,8 +69,8 @@ public class TodoServiceImpl implements TodoService {
 
     /// Todoを作成する内部処理
     private void doCreate(Todo todo) {
-        String todoId = UUID.randomUUID().toString();
-        var createdAt = new Date();
+        var todoId = UUID.randomUUID().toString();
+        var createdAt = systemDate.now();
         todo.setTodoId(todoId);
         todo.setCreatedAt(createdAt);
         todo.setFinished(false);
@@ -79,13 +80,14 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public Todo finish(String todoId) {
-        Todo todo = doFindOne(todoId);
+        var todo = doFindOne(todoId);
         if (todo.isFinished()) {
             // すでに終了している場合、業務エラー
             throw new BusinessException(MessageIds.W_EX_5003, todoId);
         }
+        // 完了状態に更新
         todo.setFinished(true);
-        boolean result = todoRepository.update(todo);
+        var result = todoRepository.update(todo);
         if (!result) {
             // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue
             // （実際にDynamoDBにアクセスするのはServiceのメソッド終了時のため）なので、ここでは業務エラーは発生しない
@@ -117,7 +119,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @DynamoDBTransactional // DynamoDBトランザクション機能を使った場合に付与しておく
     public void delete(String todoId) {
-        Todo todo = doFindOne(todoId);
+        var todo = doFindOne(todoId);
         var result = todoRepository.delete(todo);
         if (!result) {
             // Repositoryの実装にDynamoDBトランザクション対応版を使った場合には必ずtrue

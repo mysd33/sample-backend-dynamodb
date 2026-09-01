@@ -1,5 +1,6 @@
 package com.example.backend.infra.repository;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +29,7 @@ public class TodoTableItem {
     private boolean finished;
 
     // 作成日時
-    private String createdAt;
-    // TODO: Instant型に変更
-    // private Instant createAt;
+    private LocalDateTime createdAt;
 
     @DynamoDbPartitionKey
     public String getTodoId() {
