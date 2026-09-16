@@ -189,10 +189,19 @@
 
 ## 6. OIDC認証・認可
 
-> [!WARNING]
-> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring
-Bootに対応しつつ、ただいま実装中。  
-> 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
+> [!NOTE]
+> OIDC認証・認可の機能を無効化する場合には、`application.yml`の設定で、spring.profiles.activeのoidcの設定をコメントアウトするか-Dspring.profiles.activeでoidc未指定で起動する。
+>
+> ```yaml
+> spring:
+>   application:
+>     name: sample-bff
+>   profiles:
+>     active:
+>       - dev
+>       - log_default
+>       - oidc
+> ```
 
 * Spring Security OAuth2.0 Resource Serverを利用して、OIDC/OAuth2.0によるAPI認可を実装する。
 * V2のAPIは、OAuth2.0による認可が必要なAPIであるので、sample-bffのアプリから呼び出して動作確認するとよい。
@@ -200,8 +209,7 @@ Bootに対応しつつ、ただいま実装中。
         * OAuth2.0によるv2のAPI呼び出しはKeycloakでのログイン時のみで、認証およびGoogle,GitHubでの認証は、v1のBasic認証による呼び出しになるので注意。
     * 取得したアクセストークンをV2のAPI呼び出し時にAuthorizationヘッダに付与して呼び出す。
     * 本アプリケーション（Backendアプリケーション）では、Resource Serverとして、アクセストークンによるAPI認可を実施する。
-*
-BFFアプリケーションでのOIDCによるユーザ認証・認可および操作方法は[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#7-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
+* BFFアプリケーションでのOIDCによるユーザ認証・認可および操作方法は[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#7-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
 を参照。
 * Backendアプリケーションでも、Introspectionエンドポイントへのアクセスを行うため、以下の環境変数の設定をする。
     * [application-oidc.yml](./src/main/resources/application-oidc.yml)
@@ -211,8 +219,7 @@ BFFアプリケーションでのOIDCによるユーザ認証・認可および�
 
 ## 7. プロファイル「production」でのローカル実行
 
-*
-「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
+* 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
 
 > [!WARNING]
 > 以降の手順が、最新化できていないので、今後見直し予定。
