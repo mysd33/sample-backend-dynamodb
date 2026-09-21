@@ -19,7 +19,7 @@
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend
       for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
         *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+      デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）、セッション外部化はRedis
           (ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
 * [sample-backend](https://github.com/mysd33/sample-backend)
@@ -28,27 +28,28 @@
       APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
         *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB
-        Localを組み込みで起動し、接続するようになっている。
+      デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB
+      Localを組み込みで起動し、接続するようになっている。
         *
-        プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
+      プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * [sample-batch](https://github.com/mysd33/sample-batch)
     * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring
       Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
         *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
+      デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
         * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL
           (AWS上はAurora等）になっている。
 * [sample-schedulelaunch](https://github.com/mysd33/sample-schedulelaunch)
     *
-    別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
-        *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
-        * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
+  別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
+  *
+  デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+  * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
 
 *
+
 その他、本APとは連携しないので図に掲載がないが、StepFunctionsのステートマシンを使用してジョブの実行順序制御を行うバッチAPのサンプルプロジェクトとして以下があるので、参考にするとよい。
-    * [sample-batch-jobflow](https://github.com/mysd33/sample-batch-jobflow)
+* [sample-batch-jobflow](https://github.com/mysd33/sample-batch-jobflow)
 
 ## 3. REST API一覧
 
@@ -187,10 +188,11 @@
         }        
         ```
 
-## 6. OIDC認証・認可
+## 6. OAuth2.0によるAPI認可
 
 > [!NOTE]
-> OIDC認証・認可の機能を無効化する場合には、`application.yml`の設定で、spring.profiles.activeのoidcの設定をコメントアウトするか-Dspring.profiles.activeでoidc未指定で起動する。
+> OAuth2.0のAPI認可の機能を無効化する場合には、`application.yml`の設定で、spring.profiles.activeの
+`dev_oidc`の設定をコメントアウトするか-Dspring.profiles.activeでdev_oidc未指定で起動する。
 >
 > ```yaml
 > spring:
@@ -200,7 +202,7 @@
 >     active:
 >       - dev
 >       - log_default
->       - oidc
+>       - dev_oidc
 > ```
 
 * Spring Security OAuth2.0 Resource Serverを利用して、OIDC/OAuth2.0によるAPI認可を実装する。
@@ -209,17 +211,19 @@
         * OAuth2.0によるv2のAPI呼び出しはKeycloakでのログイン時のみで、認証およびGoogle,GitHubでの認証は、v1のBasic認証による呼び出しになるので注意。
     * 取得したアクセストークンをV2のAPI呼び出し時にAuthorizationヘッダに付与して呼び出す。
     * 本アプリケーション（Backendアプリケーション）では、Resource Serverとして、アクセストークンによるAPI認可を実施する。
-* BFFアプリケーションでのOIDCによるユーザ認証・認可および操作方法は[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#7-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
+*
+BFFアプリケーションでのOIDCによるユーザ認証・認可および操作方法は[sample-bffプロジェクト](https://github.com/mysd33/sample-bff#7-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
 を参照。
 * Backendアプリケーションでも、Introspectionエンドポイントへのアクセスを行うため、以下の環境変数の設定をする。
-    * [application-oidc.yml](./src/main/resources/application-oidc.yml)
+    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)
       に規定された以下の環境変数を設定することで、KeycloakのOIDC認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-backend-oidc`）を設定
         * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
 
 ## 7. プロファイル「production」でのローカル実行
 
-* 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
+*
+「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
 
 > [!WARNING]
 > 以降の手順が、最新化できていないので、今後見直し予定。
@@ -227,14 +231,15 @@
 ## 8. AWS DynamoDBと連携したAP動作確認
 
 *
+
 デフォルトでは、「spring.profiles.active」プロパティが「dev」になっていて、プロファイルdevの場合、DynamoDBLocalを使用するようになっている。AP実行時に、DynamoDBにTodoテーブルがない場合には、テーブル作成するようになっている。
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にDynamoDBを起動しておく必要がある。
     * productionの場合も、AP実行時に、DynamoDBにTodoテーブルがない場合には、テーブル作成するようになっている。
     * APからは自動的に削除しないので、AWSの無駄な利用料金がかからないよう、動作確認後不要になった時点でTodoテーブルの削除を忘れないようにすること。
     *
-    APがDynamoDBにアクセスする権限が必要なので、開発端末上での実行する場合はDynamoDBのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
-    /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにDynamoDBのアクセス権限を持ったIAMロールが付与されている必要がある。
+  APがDynamoDBにアクセスする権限が必要なので、開発端末上での実行する場合はDynamoDBのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
+  /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにDynamoDBのアクセス権限を持ったIAMロールが付与されている必要がある。
 * Profileが「production」でAPをローカル実行する場合には、ローカルでDockerかjar起動でDynamoDB
   Localを起動しておく必要がある。
 
