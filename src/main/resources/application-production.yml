@@ -1,6 +1,6 @@
 server:
   tomcat:
-# Tomcat metrics enabled for Spring Cloud for AWS Micrometer CloudWatch Metrics Integration    
+    # Tomcat metrics enabled for Spring Cloud for AWS Micrometer CloudWatch Metrics Integration
     mbeanregistry:
       enabled: true
 
@@ -9,6 +9,13 @@ spring:
     user:
       name: ${example.api.backend.basic-auth.username}
       password: ${example.api.backend.basic-auth.password}
+    oauth2:
+      resourceserver:
+        jwt:
+          # audクレームの検証を行う場合の設定（audiencesの値は、KeycloakのクライアントIDと一致させる必要）
+          audiences:
+            - ${spring.security.oauth2.resourceserver.opaquetoken.client-id}
+
   # Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration Enabled
   cloud:
     aws:
@@ -28,7 +35,7 @@ management:
     web:
       discovery:
         enabled: false
-# Metrics enabled        
+  # Metrics enabled
   metrics:
     enable:
       all: false
@@ -37,13 +44,18 @@ management:
       disk: true
       jvm: true
       tomcat: true
-# Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
+  # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
   cloudwatch:
     metrics:
       export:
         enabled: true
         namespace: ${spring.application.name}
-# OIDC/OAuth認証機能の有効
+
+# 拡張フレームワーク機能の設定
 example:
-  oidc:
+  oauth2:
+    # OIDC/OAuth認証機能の有効化
     enabled: true
+    resourceserver:
+      opaque-token:
+        enabled: true
